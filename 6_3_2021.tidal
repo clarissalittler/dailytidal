@@ -1,0 +1,31 @@
+-- Hi everyone! Welcome to another daily TidalCycles video
+-- No hi-falutin goals this time, just trying to make some tunes
+-- out of different samples and functions than usual
+xfade 1 silence
+
+
+d1 $ someCyclesBy 0.4 (jux (rev . (+ distort 0.2)))
+   $ sometimesBy 0.75 (off (1/15) (+ n "<3 4>"))
+   $ s "dbass(7,10,<0 2>)" # n "0 1" # distort 0.2
+   # room 0.2 # gain 0.8
+
+d2 $ s "<cpu2(4,5) cpu2(3,5,<0 1 2>)>" # gain 1.2
+
+:t smash
+
+d3 $ smash 10 [2, 5, 10] $ s "clap*4" # distort 0.2 # n 1
+
+d4 $ stut "3 5" (0.9) (1/20) $ degrade $ s "dsynth*10" # n "1"
+
+d5 $ s "snare*5" # n (stack [rotL 0.1 0, 1])
+
+d6 $ plyWith 4 (|+ pan 0.1) $ n "1 0*2 3 ~ 4"
+   # s "[lo|hi]" # gain 1.1 # room 0.4 # pan 0
+
+d7 $ silence
+
+-- that was a pretty short and simple experiment, but it's always
+-- fun working in a five pulse and trying samples I haven't used much or every
+-- before
+
+-- So we'll see you in tomorrow's video. Until then, take care! <3

@@ -1,0 +1,51 @@
+-- Hi everyone!!!
+-- It's time for another daily TidalCycles video!
+-- This time, huh, I'm not entirely sure what I'm going to do
+
+:t loopAt
+t> loopAt :: Pattern Time -> ControlPattern -> ControlPattern
+
+d1 $ loopAt "[2.5|3|3.5]"
+   $ someCyclesBy 0.2 (bite 8 "0 2 0 1")
+   $ striate 64 $ s "arpy*8" # n "<[0,1,2] [2,3,4]>"
+   # gain 1.1
+
+xfade 1 silence
+
+import Control.Applicative
+
+let bToI True = 1
+    bToI False = 0
+
+:t bToI
+
+-- oooooooo okay I like this trick
+
+let xor True False = True
+    xor False True = True
+    xor _ _ = False
+    nand False _ = True
+    nand _ False = True
+    nand _ _ = False
+
+
+d4 $ jux (off (1/32) (+ n 1))
+   $ degradeBy 0.25
+   $ n ((segment 1 $ range 0 5 $ slow 8 cosine) +
+     (fmap bToI
+        $ liftA2 xor (binaryN 16 "<1043 534>") (binaryN 8 "<103 231 155>")))
+   # s "arpy"
+   # speed 0.25 # gain 1.1
+
+d3 $ degradeBy 0.25
+   $ struct (liftA2 (||)
+   (binaryN 16 "<1043 534>") (binaryN 8 "<103 231 155>"))
+      $ s "[hh27,hh]"
+
+xfade 4 silence
+
+d2 $ rarely (superimpose (# s "bd"))
+   $ struct (someCyclesBy 0.3 (liftA2 (||) "[t f]*4 t*8") (binaryN 8 "133"))
+   $ s "glitch" # n (qfloor 1 $ range 2 5
+                              $ slow 2 perlin + 3*(slow 4 sine))
+                               # gain 1.05

@@ -1,0 +1,77 @@
+-- Hi everyone,
+-- so today we're going to try messing around with sew and stitch
+-- these are functions that are kinda like squeeze but for patterns
+-- of bools to be used as switches
+-- so I think this could lead to some interesting things and
+-- we'll try it
+
+let bPat1 = "t f [t f*2] <t f>" :: Pattern Bool
+    bPat2 = "<t f>*8" :: Pattern Bool
+    xor True True = False
+    xor False False = False
+    xor _ _ = True
+
+:t (<*>)
+
+t> (<*>) :: Applicative f => f (a -> b) -> f a -> f b
+
+:t fromList
+
+d1 $ s (fromList ["sd","sn","cp"])
+
+d1 $ sew bPat1 (s "bd*4") (s "arpy*2")
+
+
+d1 $ stitch ( ((slow 4 $ fromList [xor,(||),(&&),(const id)]) <*> bPat1) <*> bPat2)
+   (s "glitch*2") (s "casio")
+
+:t stitch
+stitch :: Pattern Bool -> Pattern a -> Pattern a -> Pattern a
+stitch pb a b = overlay (struct pb a)  (struct (inv pb) b)
+
+import Control.Applicative
+
+:t liftA2 (&&)
+
+zipWith (+) [0,1,2] [4,5]
+
+t> liftA2 :: Applicative f => (a -> b -> c) -> f a -> f b -> f c
+t> zipWith :: (a -> b -> c) -> [a] -> [b] -> [c]
+t> zipWith (+) :: Num c => [c] -> [c] -> [c]
+t> [4,6]
+
+d1 $ stitch "<t f>*8" (s "glitch") (s "sn")
+
+d1 $ sew "<t f>*8" (s "glitch*8") (s "sn*8")
+
+:t sew
+sew :: Pattern Bool -> Pattern a -> Pattern a -> Pattern a
+
+sew :: Pattern Bool -> Pattern a -> Pattern a -> Pattern a
+sew pb a b = overlay (mask pb a) (mask (inv pb) b)
+
+mask :: Pattern Bool -> Pattern a -> Pattern a
+mask b p = const <$> p <* (filterValues id b)
+
+d1 $ mask (inv bPat1) (s "arpy*2")
+
+t> mask :: Pattern Bool -> Pattern a -> Pattern a
+t> 0-(¼>½)|s: "arpy"
+½-(⅝>11/16)-1|s: "arpy"
+½-(11/16>¾)-1|s: "arpy"
+
+|+, |-
+
+a |+  b = (+) <$> a <* b
+
+(#) :: Unionable b => Pattern b -> Pattern b -> Pattern b
+(#) = (|>)
+
+(|> ) :: Unionable a => Pattern a -> Pattern a -> Pattern a
+a |>  b = flip union <$> a <* b
+
+overlay :: Pattern a -> Pattern a -> Pattern a
+overlay !p !p' = Pattern $ \st -> query p st ++ query p' st
+
+stack :: [Pattern a] -> Pattern a
+stack = foldr overlay silence

@@ -1,0 +1,16 @@
+{-
+Hi everyone! After a short hiatus we're back to daily videos again!
+
+-}
+
+xfade 1 silence
+
+d1 $ layer [slow 16,
+            slow 8,
+            slow 4,
+            slow 2,
+            rev . (|+ n 7) . (# sustain 0.6),
+            degrade . fast 4 . (|+ n 12) . (# sustain 0.3),
+            struct "t(<5 7>,8)" . (# s "supernoise") . (# release "{0.4 0.3 0.8}%5")]
+   $ s "<superhammond(3,4) [superhammond ~]*2>" # n "<b3 c4> d4 a4 e4 g4"
+     # sustain 1.1 # gain 1.1

@@ -1,0 +1,200 @@
+-- Hi everyone!
+-- It's another daily TidalCycles video! Let's play around more with chords and slow sad music
+-- we might also fuss with seqPLoop a little
+
+(scale "major" "-14")
+
+-- whew, lots of mistakes tonight!!
+-- wh...why did that play an entirely different thing?
+unexpected '-'
+expecting space, charnum, rest, "[", "{", "<", "^", "." or end of input
+Return to previous pattern. <- a-hah! the typo made it try to play something I'd previous used!
+well okay it's not really a typo, is it? it's a little weirder than that
+but anyway, back to the show
+
+d2 $ slow 2
+   $ s "bd [hh27*2,<linnhats hh>]"
+
+:t qfloor
+
+-- okay we managed to create a really slowly varying pattern here by
+-- adding a slowed down sine way, a saw wave, and perlin noise
+-- if we wanted we could then relatively weight them to determine
+-- what the chunky contributor really is, but I like this
+
+-- Okay, that'll be it for this video
+-- Until tomorrow, take care <3
+
+xfade 2 silence
+
+d1 $ slow 2
+   $ superimpose (slow 2 . arp "down up" . (|+ n "<12 -12>") . (|* gain 1.1))
+   $ s "<superpiano(3,4,<0 1 2 3>) [superpiano*2 [~ superpiano]]>"
+      # n (3 + (scale "dorian"
+                  $ (fmap floor $ range "-2" 5 -- wave interference, y'all
+                       $ (slow 4 $ sine) + (slow 8 $ saw) + (slow 2 $ perlin)) |+ "[0,2,4]" |- 7))
+      # sustain 4 # lpf 900 # shape 0.30
+      # gain 0.85 # room 0.3
+
+:t floor
+
+"{0 3 3 0 2 4}%4" |+ "[0,2,4]" :: Pattern Int
+
+
+--
+-- So before we played around
+-- a lot with ur but not much with seqPLoop, which is going to be
+-- an interesting function for timing backing beats.
+-- It's a little less flexible than ur but it also has a very clean
+-- interface for creating simultaneous parts that the more flexible ur
+-- has.
+
+-- First, a word on scales
+-- whole, half, whole, whole, whole, half, whole
+
+(scale "dorian" "0 1 2 3 4 5 6 7")
+
+"c d ef f g a bf c6" :: Pattern Double
+
+t> (0>⅛)|0.0
+(⅛>¼)|2.0
+(¼>⅜)|3.0
+(⅜>½)|5.0
+(½>⅝)|7.0
+(⅝>¾)|9.0
+(¾>⅞)|10.0
+(⅞>1)|12.0
+
+t> (0>⅛)|0.0
+(⅛>¼)|2.0
+(¼>⅜)|3.0
+(⅜>½)|5.0
+(½>⅝)|7.0
+(⅝>¾)|9.0
+(¾>⅞)|10.0
+(⅞>1)|12.0
+
+(3 + scale "dorian" "0 1 2 3 4 5 6 7")
+
+t> (0>⅛)|3.0
+(⅛>¼)|5.0
+(¼>⅜)|6.0
+(⅜>½)|8.0
+(½>⅝)|10.0
+(⅝>¾)|12.0
+(¾>⅞)|13.0
+(⅞>1)|15.0
+
+"[0,2,4]"
+
+E♭ F G♭ A♭ B♭ C D♭ E♭
+
+"ef f gf af bf c6 df6 ef6" :: Pattern Double
+
+t> (0>⅛)|3.0
+(⅛>¼)|5.0
+(¼>⅜)|6.0
+(⅜>½)|8.0
+(½>⅝)|10.0
+(⅝>¾)|12.0
+(¾>⅞)|13.0
+(⅞>1)|15.0
+
+
+:t seqPLoop
+t> seqPLoop :: [(Time, Time, Pattern a)] -> Pattern a
+
+d1 $ seqPLoop [(0,24, s "[bd [~ cp*2]]"),
+               (4,18, s "linnhats*8"),
+               (1,10, slow 4 $ s "superhammond" # n "c4'maj" # release 2)]
+
+d1 $ someCycles
+   $ seqPLoop [(0,24, s "[bd [~ cp*2]]"),
+               (4,12, s "hh27*16"),
+               (2,24, s "jvbass*2"),
+               (8, 18, slow 4 $ n "c4'maj" # s "superhammond" # release 2)]
+
+
+
+
+
+
+
+
+-- Hi everyone! It's another daily TidalCycles practice video
+-- This time we're going to try practicing with doing weird
+-- layerings on top of a smaller number of patterns and see
+-- what we can do
+-- Then, I might turn on my mic and we'll have a brief discussion
+-- of a couple of functions I'm trying to figure out how to use
+-- before signing off
+
+-- Interesting! putting the variation into the
+-- euclidean rhythm actually kinda munged the striation!!
+
+-- keeping the right pulse is important even for the shape of the bite
+-- okay look this is the very first time I've used jux rev on camera
+-- cut me some heck!!!
+d1 $ someCyclesBy 0.4 (jux rev)
+   $ someCyclesBy 0.7 (bite 16 "<[0 <1 3*2> 2 0] [0 3 8 0] 0*4>")
+   $ superimpose (striate "[32|64|128]")
+   $ s "jvbass(7,8)"
+   # gain (range 0.83 0.97 $ fast 4 sine)
+   # room 0.7
+   # vowel "{o u a}%5"
+
+xfade 1 silence
+
+d2 $ degradeBy 0.25 $ s "[lo|hi]*8"
+                    # n ("0 1 2" + "1 1")
+                    # room 0.5
+
+xfade 2 silence
+
+d3 $ s "808ht*2 ~ 808ht*4 ~" # room 0.4 # n "0 1"
+
+xfade 3 silence
+
+-- Okay, mic on
+-- here's a function for using continuous patterns
+-- easier with other functions because I keep wanting to
+-- have random numbers without tanking the pattern structure
+
+:t (>>=)
+t> (>>=) :: Monad m => m a -> (a -> m b) -> m b
+
+:t fmap
+fmap :: Functor f => (a -> b) -> f a -> f b
+
+:t segment
+segment :: Pattern Time -> Pattern a -> Pattern a
+
+:t cbind
+t> cbind :: (t -> Pattern b) -> Pattern t -> Pattern b
+
+:t cfmap
+t> cfmap :: (t -> b) -> Pattern t -> Pattern b
+
+let cbind f c = do
+              n <- segment 1 c
+              f n
+    cfmap f c = do
+              n <- segment 1 c
+              return $ f n
+    cutN n l = take (n-1) l ++ drop n l
+-- it's almost fmap but not quite, see?
+
+"a'm11" :: Pattern Double
+
+import Sound.Tidal.Chords
+
+chordList
+
+:t stack
+
+d1 $ s "[lo|hi]*8" # n "0 1 2"
+
+d2 $ someCyclesBy 0.6 (bite 16 "0 1 2 0")
+   $ someCyclesBy 0.5 (stut 4 0.8 (1/16))
+   $ superimpose (striate "64")
+   $ s "jvbass(7,8,<0,1,2>)"

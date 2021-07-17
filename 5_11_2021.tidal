@@ -1,0 +1,80 @@
+setcps (135/60/4)
+
+
+-- HRMMM I wonder if it'd be better
+-- to have something kinda like lists of ints and then turn those
+-- into something via stack after doing arithmetic on them??
+
+let bCh = "[0,2,4]" :: Pattern Int
+    pCh = "[0,4]" :: Pattern Int
+    sCh = "[0,2,4,6]" :: Pattern Int
+    oCh = "[-8,2,-4,6]" :: Pattern Int -- maybe subtracting by
+                                     -- this doesn't do 'o afterall?
+    chrds = cat ["-1 3"+bCh,
+                 "<10 8 7 12>"+ oCh,
+                 "2 ~ 1 <3 ~>",
+                 "-2 ~ 1 2" +pCh,
+                 3+oCh, (-2) + bCh]
+
+-- arp is just so much better behaved with
+-- someCycles than sometimes, much like ply!!
+
+-- iter never behaves quite the way I hope it will with
+-- patterns like this
+d1 $ someCyclesBy 0.2 (arp "down")
+   $ n (scale "dorian" $ (|+ "[-2|-1|0|1|2]")
+        $ off "e q" (|+ "<1 -2 -4>") $ chrds)
+       # s "superpiano"
+       # lpf "{800 900 1200}%5" # sustain 4
+
+xfade 2 silence
+
+d2 $ s "[c_table*2,<hh27*4 hh27*8?>,~ cpu2*<1 2> ~ cpu2]"
+   # room 0.3
+   # n ("[0 1]/8")
+
+d3 $
+
+sCh
+
+oCh
+{-
+t> hrmmmmm that doesn't look right
+(0>1)|-8
+(0>1)|0
+(0>1)|-8
+(0>1)|0
+(0>1)|-6
+(0>1)|2
+(0>1)|-6
+(0>1)|2
+(0>1)|-4
+(0>1)|4
+(0>1)|-4
+(0>1)|4
+(0>1)|-2
+(0>1)|6
+(0>1)|-2
+(0>1)|6
+-}
+
+scaleList
+
+:t choose
+
+:t off
+
+-- Huh! I never actually noticed that stut only works on
+-- ControlPattern and not any pattern
+-- if you're curious at all
+
+:i ControlPattern
+
+:i Pattern
+
+-- See a control pattern is just a specific type synonym for
+-- Pattern (ControlMap)
+
+:t off
+
+-- ahhh this is where the special syntax is useful

@@ -1,0 +1,51 @@
+-- Hey we did an entire month of daily videos!!
+-- Kinda neat, right?
+
+-- Alright, I think I'll call it there but we managed to fuss around
+-- and produce some pretty fun little bits and pieces there
+-- and at some point I need to put together actual performances, y'know?
+
+-- Until tomorrow, take care <3
+
+-- let' see what happens if we put swing larger in the back half of the pattern
+
+
+-- okay that's kinda cool
+xfade 1 silence
+
+d1 $ swing "3"
+   $ stack [every 5 (off (1/16) (|+ n 1)) $ s "[bd*8 sn*4]",
+            s "future*<4 8>",
+            s "arpy(7,8,<0 1 2 3 4 5>)" # speed 0.5 |+ n "0 <2 1 -1> 2",
+            s "hh27*16?" + n "2 1"]
+            # n (irand 4)
+            # vowel "[a,e]"
+
+d1 $ plyWith ("2 4")
+   ((|+ pan 0.25) . (# vowel "<a e o>") . (|+ distort 0.1)) $ s "future*8" # gain 1.1
+
+
+-- this seems ridiculous but kinda fun
+-- kinda have to wait a long time to check I didn't think of that
+-- uhhh hrmm
+-- that's messed up
+
+d1 $ someCyclesBy 0.5 (bite 8 "0 2 1*2 0")
+   $ slow "16 32 64"
+   $ rev
+   $ plyWith 128 ((|+ pan 0.1) . (+ distort 0.01)) $ s "future*8" # pan 0
+
+xfade 1 silence
+
+-- that was kinda horrible and I loved it
+
+-- normally I find plyWith doesn't play well with sometimes
+-- wait what??
+d1 $ chew 8 "0 2*4"
+   $ plyWith 16 (|+ n 1)
+   $ s "future*8"
+
+xfade 1 silence
+
+d1 $ plyWith 8 ((|+ n "<1 2>") . (|* gain 1.05))
+   $ stack [s "bd", s "future", s "sn*2", s "ht?", s "sd" # speed "-1"]

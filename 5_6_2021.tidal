@@ -1,0 +1,93 @@
+-- Hello and welcome back!
+
+let lp n = lindenPoly n 5
+            "0:123,1:2~0113,2:3~1~2,3:2~1~0~221,~:1~1" "0" 1000
+
+d3 $ slow 8 $ s "helm1"
+   # n (scale "minPent" $ "<[-3,-5] [-4,-6]>" + "<2 -1 0 1>") # sustain "<1.5 2 3>"
+
+xfade 3 silence
+
+xfade 2 $ ghost
+        $ someCyclesBy 0.9 (bite 4 "<0 3>*2 1*<2 4> ~ 2?")
+        $ n "0 ~ <1 2> 3" # s "[cpu2,hh27 hh]"
+                          # distort "<0.3 0.4 0.5 0.2>"
+
+xfade 2 silence
+
+:i Pattern
+
+
+-- I should rewrite so that the lindenPoly function takes a more general
+-- arg for the number of the polymetric seq
+xfade 1 silence
+
+d1 $ whenmod 10 8 (jux (hurry 2))
+   $ plyWith 2 (|+ n "<1 2>")
+   $ s (lp 4 ["<808 808bd>","linnhats","glitch","c_table"]) # n "0 1 2"
+
+:i Read
+
+let toPolyseq s n = parseBP_E $ "{" ++ s ++"}%" ++ (show n)
+
+:t toPolyseq
+
+:t unwords
+
+let pString = unwords $ map lindNumToSnd (take 512 $ lindenmayer 5 "0:1~~,1:0~1~2~201~~2~,2:201~,~:~1" "0")
+    lindNumToSnd '1' = "sn"
+    lindNumToSnd '0' = "future"
+    lindNumToSnd '2' = "cp"
+    lindNumToSnd '~' = "~"
+
+d1 $ stack [s "bd [cp sn]",
+       jux (fast 2) $ s "bd cp",
+       s "bd cp"]
+
+:t bite
+
+d1 $ someCycles (fast 2 . bite 8 "<[0 <5 2*2> ~ 1] [3 ~ 7 8]>")
+   $ plyWith "<2 4>" (|+ n 1)
+   $ s "808ht*2 <sn glitch>"
+   # n "<[0 1] [2 3] 4>"
+
+d2 $ n "0 1" # s "<sn glitch>"
+   # distort "<0.3 0.4>" # shape 0.8
+
+d3 $ stack [s "{bd!4 [sn cp]!2 cpu2!2}%<4 8>"]
+
+d2 $ slow 8 $ s "helm1"
+    # n (scale "locrian"$ "[[-5,-9]|[-7,0]|-3]" + "<-3 ~ -2 1 0>")
+    # sustain "<2 3 1.5>"
+
+let lindenPat' steps
+               lString
+               lStart
+               len
+               targs = unwords $
+                      map (cToI targs) $
+                       take len $ lindenmayer steps lString lStart
+    cToI lst c = case c of
+              '~' -> "~"
+              _ -> lst !! (read [c])
+    lindenPat s lstr lsta l targs =
+        parseBP_E $ lindenPat' s lstr lsta l targs
+    lindenPoly p s lstr lsta l targs =
+      (flip toPolyseq) p $ lindenPat' s lstr lsta l targs
+
+
+d1 $ s (lindenPoly 4
+        5 "0:123,1:2~0113,2:3~1~2,3:2~1~0~221,~:1~1"
+        "0" 1000 ["[cp|glitch:2]","sn","808*2","linnhats"])
+
+take 10 [1,2,3]
+
+:t lindenPat 5 "0:1~~,1:0~1~2~201~~2~,2:201~,~:~1" "0"
+
+:t map lindNumToSnd
+
+pString
+
+toPolyseq pString 10 :: Pattern String
+
+d1 $ s (toPolyseq pString 10)

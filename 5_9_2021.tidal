@@ -1,0 +1,27 @@
+setcps (90/60/4)
+
+d4 $ struct "t*2 ~ t t*<2 4>"
+   $ randslice 64 $ s "rain" # n 0 # lpf 1000 # gain 1.3
+
+xfade 4 silence
+
+d3 $ slow 4 $ n "<a4'min c4'maj d4'min>"
+   # s "superhammond" # sustain 4 # lpf 1000 # gain 0.75
+
+xfade 3 silence
+
+d2 $ rarely (arp "thumbup")
+   $ n "<<[a4'min g3'min] d4'min> c3'maj [d3'min [d3 c3]] f3'maj f4'maj>" # s "superpiano"
+   # sustain 4 # lpf 1000 # shape 0.25 # gain 0.8
+
+xfade 2 silence
+
+d2 $ jux (# up "<c3'maj d3'min>")
+   $ someCycles (plyWith 2 (|+ (shape 0.15)))
+   $ n "0 <1*2 2*2>" # s "tink" # gain 1.3 # shape 0.25 # room 0.1
+   # pan (slow 8 sine)
+
+xfade 1 silence
+
+d1 $ s "bd <bd bd*2 [bd, ~ sn] sn*2> ~ cp*<1 2>"
+   # room 0.4 # delay 0.3

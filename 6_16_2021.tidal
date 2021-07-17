@@ -1,0 +1,33 @@
+{-
+Hi everyone! Welcome to another daily TidalCycles video
+
+This'll be another back to basics kinda deal, just practicing simple skills
+-}
+
+:t linger
+
+:t within
+
+uhhhhhhh
+the heck just happened?
+
+ohhhhhh emmmmmmmmm geeeeeeeee
+I can't believe I did that
+
+-- ooooooooooooh I like the way that sounds!!!
+-- relative banger
+
+xfade 1 silence
+
+-- I think that worked pretty well, actually, like in particular
+-- I really liked the whole superimpose gap on top of it and
+-- I really really liked the sound of linger combined with whenmod
+-- so yeah that's all for this time and until next time take care <3
+
+d1 $ superimpose ((gap "<8 16>"))
+   $ someCyclesBy 0.7 (superimpose (slow 4 . ply 2 . (|+ n 1)))
+   $ sometimes (off "e" (# s "<casio linnhats>"))
+   $ someCycles (within (0.25,0.5) ((# distort 0.4) . (# vowel "<a e>")))
+   $ whenmod 9 7 (linger "<0.5 0.25>")
+   $ s "<future bd>*2 <ht hh27(3,4)> <glitch*2 cpu2> <bd sd*2>"
+   # n "<0 <3 [3,5]> 1 [2,0] 4>"

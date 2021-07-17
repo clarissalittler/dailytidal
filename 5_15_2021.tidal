@@ -1,0 +1,44 @@
+d1 $ s "bottle(3,4,<0 1 2>)" # n (irand 11) # speed 0.25 # gain 1
+
+xfade 1 silence
+
+-- oh lulz there's only two blips
+
+-- that's a fine sample, but I think I'd just rather use
+-- superchip
+
+d4 $ up (scale "mixolydian"
+        $ "<-2 -3> <2 3>*2" + "[[0,2,4]|0]" - "<4 2 3>"  )
+        # s "blip:0"
+
+xfade 4 silence
+
+d2 $ slow 2
+   $ up (scale "mixolydian" $ "<-4 0*<0 1 2> -2 -1>"
+                              + "<-1 1 2>")
+   # s "house" # n "5" # gain 1.1
+   # pan rand
+
+d2 silence
+
+:t xor
+
+-- so I really like this whole liftA2
+-- of a boolean op to combine the patterns trick
+d3 $ struct (liftA2 (\b1 b2 -> not (b1||b2)) "<[<t f>*4] [[t f] t]>" "<t*2 t> f t")
+   $ randslice 32
+   $ s "moog" # n "<0 1>"
+
+xfade 3 silence
+
+
+
+
+
+
+
+
+
+d1 $ s "bottle(3,4)" # n (irand 10) # speed 0.125
+
+d1 $ gap 16 $ up (scale "mixolydian" $ "<-4 -2*[1|2] 0 -1>" + "<-2 0 1>") # s "house:5"

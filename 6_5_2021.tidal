@@ -1,0 +1,66 @@
+-- Hi everyone! Welcome to another TidalCycles video
+-- this time we're going to play more with a 13 pulse
+-- and combine it with some uses of binaryN and struct
+-- and liftA2 like we've done before
+-- let's see how this works??
+
+:t binaryN
+
+-- WAIT, let's try something!!!!
+-- this is going to be silly
+
+$ cat [s "superchip(<9 10 11>,13,<2 4>)",
+          struct (binaryN 13 2345) $ s "superchip"]
+
+:t binaryN
+
+t> binaryN :: Int -> Pattern Int -> Pattern Bool
+
+:t qfloor
+
+t> Error in pattern: Ratio has zero denominator ?????
+-- but this is never zero????????????????????????
+-- there are no hecking zeros here I'm very confused
+
+-- okay the error message is about using a continuous pattern
+-- for the struct SOOOOOO
+
+-- OKAY IT WORKS
+-- I didn't say it worked well!!
+
+import Control.Applicative
+
+let binPat = liftA2 (||) (binaryN 13 $ segment 1 (fmap floor $ range 1111 8191 $ perlin)) (binaryN 13 $ "101")
+
+-- okay doing a pointwise or really lets you keep a minimum amount of beat
+-- to the pattern
+
+-- now I want a function that takes a binary pattern and zips it with a continuous
+-- pattern to sample just at the 1s
+-- WAIT isn't that going to be a uhh |>
+-- because structure from left values from right?
+
+:t (|>)
+-- oh dang
+-- no, it doesn't work like that
+-- uhh can struct just do that?
+-- YES, struct does the right thing here I didn't realize it worked
+-- like that for continuous patterns, sampling them at the right moments
+
+
+-- Okay, well we didn't exactly create a tune this time but I feel like
+-- we're onto learning a few things here and getting some more lessons
+-- next time we'll keep exploring these ideas a bit for some weirdness
+-- until then, take care!
+
+let newNotePat = struct binPat (fmap floor $ range "-15" 5 $ rand) :: Pattern Int
+
+newNotePat
+
+d1 $ n (scale "dorian" (newNotePat |- 4))
+   # s "superchip" # release 0.6
+
+d1 $ (struct binPat $ s "superchip")
+   # n (scale "dorian" $ fmap floor $ range (-15) (-4) $ slow 8 sine)
+   # release 0.7
+   # voice "{0.1 0.3 0.5}%5"

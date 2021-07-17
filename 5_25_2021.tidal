@@ -1,0 +1,32 @@
+{-
+  Welcome!
+  It's another daily TidalCycles video and we're going to just
+  try hecking around with seqPLoop and seeing what on Earth we can make
+
+  Stick around and (hopefully) enjoy!
+-}
+
+-- let's try an offset on the whole thing!
+
+-- oh it's a banger!! full banger now
+
+-- Hah okay that was actually kinda fun!
+-- We should do that again!
+-- But until then, take care <3
+
+xfade 1 silence
+
+d1 $ jux (rev . (# delay 0.3))
+   $ off (1/8) (+ n 1)
+   $ whenmod 14 11 (striate 64)
+   $ seqPLoop [(0,12,s "lo [lo*<2 1> hi*<1 2 4>]"),
+               (4,10, s "super808*4" # n "<3 4 5>"),
+               (3, 9, s "[hh27*<4 8>,hh*<8 4>]"),
+               (5, 11, s "insect(3,4)" # n "0 1"),
+               (0,2, s "future*8"),
+               (1,4, s "sundance" # n 3),
+               (9,12, s "glitch(7,8,<0 1 2>)" # n (irand 8)),
+               (12,14, s "superhammond" # n "d4'min" # release 2),
+               (13,15, s "supernoise" # n "-12" # release 4)]
+                # gain 0.95
+    -- huh I'm finding it hard to get this part right

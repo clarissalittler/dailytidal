@@ -1,0 +1,28 @@
+-- Hi everyone, I think this is going to be another quiet
+-- music night
+
+-- not bad, pretty simple but not bad
+-- until tomorrow, take care <3
+
+let mel = scale "minor" ("{0 <-1 -2 [~ 0]> <-2 [1 ~]> [2 0] <-3 -2 ~> -4 0}%5"
+                         + "-3 <-2 [-1 1]>"
+                         + "{ -1 -2 0 -2 1 3}%4") -9 :: Pattern Double
+
+:t inside
+
+xfade 1 silence
+
+d1 $ slow 2 $ layer [(# voice 0.1) . (# pan (slow 4 sine)),
+                     (# voice 0.3),
+                     (# voice 0.5) . (# pan (slow 4 cosine))]
+            $ whenmod 20 15 (iter 5)
+            $ n mel
+            # s "superchip"
+            # release "{0.8 0.7 0.6 0.9}%3"
+            # shape 0.2
+
+xfade 2 silence
+
+d2 $ slow 2
+   $ struct (liftA2 (&&) "<[t f [t t*2] t*2 <t t*2>] t(4,5)>" "t [<t f> <f t>]")
+   $ s "supernoise" # n "-12 -18" # release 0.3

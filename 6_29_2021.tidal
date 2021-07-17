@@ -1,0 +1,23 @@
+{-
+Hi everyone! After a short hiatus we're back to daily videos again!
+
+This is going to be kind of a warmup, revisiting one of the last things
+I really enjoyed which was organs plus layered transformations
+-}
+
+-- that was a nice weirdly demented piece
+-- good for getting back into things
+-- take care everyone!
+
+xfade 1 silence
+
+d1 $ layer [slow 4,
+            slow 4 . arp "<up down>" . (|- n 12) . (# pan sine),
+            degrade . fast 2 . rev . (|+ 12),
+            someCycles (ply 2 . (# s "cpu2")),
+            every 3 (# squiz "2 4"),
+            rotL 0.5 . (# s "bd"),
+            rotL 0.25 . (ply 4) . (# s "[hh,hh27]"),
+            slow 16 . rev . (# sustain 8) . (# crush 2)]
+   $ s "<superhammond(3,4,<0 1 2>) [[superhammond ~]*2 superhammond]>"
+    # n (scale "major" $ "0 3 4" + "<0 [0,2,4,6]>")

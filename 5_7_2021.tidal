@@ -1,0 +1,53 @@
+-- That's all for tonight!
+-- Thanks for watching
+
+let mel = (scale "minPent" $ sometimes (|+ "[[0,2]|[0,1,2]]")$ "{ -1 0 -4 -2 1 -3}%7")
+    str = cat ["t(7,8,<0 1>)",
+               binaryN 8 "135",
+               binaryN 8 "201",
+               binaryN 8 "197",
+               binaryN 8 "123"]
+
+d2 $ stut 4 (0.9) (1/8)
+   $ s (struct str "superchip") # n mel
+   # voice "{0.3 0.1 0.2}%5" # release "{0.2 0.1 0.3}%5"
+
+d1 $ n (scale "aeolian" $ "-2 0") # s "helm2" # legato "<0.1 0.2 0.5 1 1.5>"
+
+:i Pattern
+
+xfade 2 silence
+
+d3 $ rev
+   $ slow 2 $ (|- n 12) $ s (struct str "superchip") # n mel
+   # voice "0.1 0.2" # release 0.4 # room 0.2
+
+xfade 3 silence
+
+xfade 1 silence
+
+d1 $ jux (off (1/16) (|+ voice 0.2))
+   $ every 5 (superimpose (# s "superreese"))
+   $ off (1/8) (|- n 12)
+   $ n "<[-1*2 0 -4 -2] -4(3,4) [-3 -2*2 ~ -5] [-1 ~ -3 ~] [-2 0 0*2 1]>"
+   # s "supernoise"
+   # release "{0.1 0.15 0.2 0.25}%7"
+   # voice "{0.2 0.1 0.3 0.4}%5"
+   # room 0.25
+   # gain 0.9
+
+-- HRMMMMM, it's hard to get interesting pattern shapes
+-- just with addition like that
+-- it
+
+d1 $ whenmod 6 4 (|* speed "-2")
+   $ every 5 (stut 4 0.8 (1/12))
+   $ n ("<-1 -2>*4"
+        + "[2 1] <0 1>*2 <0 1 2> [2 [1 ~]] 1 3*2"
+        + "[0 0 -1] 0 [1 2 0] 3")
+   # s "{hh27 wind tink supernoise}%9"
+   # gain 1
+   # room 0.5
+   # legato 0.15
+   # lpf 2500
+   # pan (slow 4 sine)

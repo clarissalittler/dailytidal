@@ -1,0 +1,47 @@
+-- Hi everyone!
+-- Welcome to our daily TidalCycles video!
+-- This time is going to be about creating short rhythms of patterns
+-- by heavily using degrade
+
+-- lessons:
+-- put the dominant of the two sounds at the higher degradation
+--    if they have the same flat beat
+-- use rotate to keep things from being quite on the *same* beat
+-- you can get some fun textures, by mixing euclidean and flat beats
+
+-- yeah, this wasn't bad? It's probably a trick I'll use at some point
+-- Until tomorrow, take care <3!
+
+-- IT ALWAYS WEIRDS ME OUT THAT YOU CAN DROP THE S SOMETIMES AND IT'LL STILL WORK
+
+:t degradeBy
+-- the first arg can be a pattern, eh?
+degradeBy :: Pattern Double -> Pattern a -> Pattern a
+
+-- let's try putting in some rotates to get them off the same beat
+
+-- ahhh much better the sd was kinda clashing
+
+-- this was kind of a neat small experiment, but I think I'll
+-- call it at this point
+
+xfade 1 silence
+
+d1 $ stack [degradeBy 0.5 (s "bd*<8 16>"),
+            rotL (0.125)
+               $ degradeBy (range 0.5 0.75 $ slow 4 perlin) (s "glitch*16"),
+            degradeBy "<0.25 0.5 0.75>" (s "hh27*16"),
+            rotL (0.25) $ degradeBy (slow 16 sine) (s "future*8"),
+            degradeBy 0.75 $ s "arpy*16" # speed 0.5
+                             # legato "{0.45 0.55 0.65}%4",
+            degradeBy "[0.25|0.5]" $ (s "hh(<13 15>,16)")
+            ]
+
+
+
+
+d1 $ stack [degradeBy 0.2 $ s "bd*8",
+            degradeBy 0.4 $ s "hh27*16",
+            degradeBy 0.6 $ s "future*8",
+            degradeBy 0.8 $ s "moog*<8 16>" # legato "{0.4 0.3 0.5}%5",
+            degradeBy 0.2 $ s "glitch*16" # n "{0 2 3}%5" # room 0.2]

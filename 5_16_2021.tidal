@@ -1,0 +1,55 @@
+-- Hey everyone! Welcome to another TidalCycles video
+-- Not really feeling like talking tonight
+-- so let's just go ahead and try making some music
+-- I always like to return to lo-fi, chillhop, piano type of stuff
+-- so let's do that and get back to that feeling
+
+-- we're trying to do actual chord progressions this time
+-- rather than me just guessing and tweaking
+let chordsList = map (|+ "[0,2,4]") [0,1,2,3,4,5,6 :: Pattern Int]
+    chordProg = squeeze "<[0 3 ~ [4 4]] [0 ~ 3 [4 0]]>" chordsList
+
+-- the -7 is to reduce an octave inside the scale function
+-- which feels weird because it seems like that should be -8
+-- because octave, but it's not
+
+d2 $ someCycles (jux (|+ n 1))
+   $ s "[<bd [bd*2 ~]>,[~ glitch*<1 2 4>]]" # lpf 400
+
+xfade 2 silence
+
+xfade 3 silence
+
+d3 $ every 5 (ply 2)
+     $ stack [s "hh27(3,4,<0 1 2>)"
+              # speed 0.5 # lpf 1500,
+              rotR 0.25 $ s "[hh:1*<1 2>]/4" # lpf 2200,
+              rotR 0.125 $ s "cp:1/2" # lpf 1700]
+
+xfade 1 silence
+
+d1 $ slow 16
+       $ n (scale "major"
+            $ rarely (off (1/16) (|+1)) $ often (|-7) $ chordProg)
+         # s "superpiano"
+         # sustain 8 # lpf "{700 800 600}%4"
+         # shape (0.4) # gain 0.8 # room 0.1
+
+
+-- Thanks for watching this short quiet video
+-- take care
+
+
+head chordsList
+
+d1 $ n (scale "major" $ "[-8,-6,-4]" ) # s "superpiano" # sustain 4 # lpf 1000
+
+d1 $ (|- n 12) $ n (scale "major" $ "[0,2,4]") # s "superpiano" # sustain 4 # lpf 1000
+
+(|- n 12) $ n (scale "major" $ "[0,2,4]")
+
+n (scale "major" $ "[-7,-5,-3]")
+
+
+
+chordProg - 8

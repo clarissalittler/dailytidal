@@ -1,0 +1,48 @@
+:t snowball
+
+d1 $ snowball 4 (+) (fast 2) $ n (run 3) # s "superpiano"
+
+d1 $ struct "<1 0>(3,8)" $ sound "bd"
+
+d1 $ sew "t f" (sound "bd") (sound "cp")
+
+
+:t const
+
+
+hush
+
+:set -package hosc
+
+d1 $ stitch "t(3,8)" (sound "bd:4") (sound "sn:4")
+
+d1 $ fast "1.5 2" $ note (scale "locrian" $ snowball 16 (\ x y -> x + (y `div` 2)) (slow 2) $ (run 4)) #sound "gtr" #gain 0.8 # distort 0.15 # squiz 3
+
+d2 $ s "super808*8" # n (3 + 2*sine)
+
+d1 $ fast "1.5 2" $ note (scale "minor" $ snowball 16 (flip const) (slow 2) $ (run 4)) #sound "gtr" #gain 0.8 # distort 0.15 # squiz 2
+
+d1 $ weave 4 (pan saw)
+  [n "0 1 2 3" # s "numbers",
+   n "0 1 2 3" # s "alphabet"
+  ]
+
+d1 $ weave 4 (pan saw)
+    [n "[0*2 0*3, [~ 3]*2, 4(3,8,<0 2>)]" # s "superpiano" # squiz 2,
+     fast 2 $ brak $ n "0 4 3 <[~ 3] 3>" # s "gtr"
+    ] # gain 0.8
+
+d1 $ weave 16 (distort 0.4)
+      [sound "bd sn cp",
+       sound "casio casio:1",
+       sound "[jvbass*2 jvbass:2]/2",
+       sound "hc*4"
+      ]
+
+d1 $ weaveWith 8 (sound "bd [sn drum:2*2] bd*2 [sn drum:1]")
+        [fast 2,
+         (# speed "0.5"),
+         chop 16
+        ]
+
+:t brak

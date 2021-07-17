@@ -1,0 +1,47 @@
+-- Hi everyone, welcome back to another daily TidalCycles
+-- video
+-- I was thinking it might be fun to do something again with the
+-- superchip synth since it's one of the first ones I really learned
+-- to enjoy playing with
+-- maybe we can build a slower, but nice, melody
+-- and expand out from there
+let mel = 4 + (scale "mixolydian" $ sometimes (|+ "[[0,2,4]|[0,4]|[0,2,4,6]|[0,2,6,8]]")
+                                  $ "{0 1 3 4 4 0 -1 -2 1 0}%4")
+
+-- never put sometimes in the middle of a chain of compositions
+-- like that before
+-- kinda fascinating
+
+:t palindrome
+
+:t layer
+-- so layer was useful here making sure that the two things happened
+-- separately rather than interferring with each other
+
+-- okay using sine and cosine to make two parts pan separately is kinda funnnnnn
+
+
+-- this was really cool but I think I've exhausted what I've thought of to add and
+-- I think it'll be nice to just play this out, maybe do the classic reverse deconstruction
+-- that live coders often do
+
+-- okay, that started slow but turned out really fun, I think
+-- we came up with a few new tricks and ideas on the fly
+-- and I think came up with a really nice use of layer to build melody
+-- So tomorrow will be another video!
+-- Until then, take care <3
+
+xfade 1 silence
+
+xfade 1 $ layer [stut "[2|4]" (range 0.7 0.9 perlin) "e" . (# pan (range 0.15 0.85 $ slow 4 sine))]
+--            slow 2 . (|- n 12) . (|+ voice 0.15) . (|+ release 0.7) . (# pan (range 0.15 0.85 $ slow 4 cosine))]
+--            slow 4 . (|- n 24) . (# sustain 2) . (# gain 0.95)]
+            -- degrade . struct "t*8" . (# gain 0.9)]
+   $ palindrome
+   $ slow 2
+   $ off "e" ((|+ voice 0.15 ) . sometimes (|- release 0.1) . (# vowel "a"))
+   $ s "<superchip(3,4,<0 1 2 3>)!5 [superchip*2 superchip] superchip*4>"
+     # n (mel |- 12)
+     # release (0.2 + "{0.2 0.18 0.25 0.3 0.1}%3")
+     # voice (0.3)
+     # room 0.2

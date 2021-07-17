@@ -1,0 +1,20 @@
+{-
+Hi everyone! Welcome to another daily TidalCycles video
+
+This'll be another back to basics kinda deal, just practicing simple skills
+-}
+
+:t within
+
+-- I think I'll keep this just a short video and explore more short basics
+-- in the next video
+xfade 1 silence
+
+d1 $ someCycles (stut 2 0.9 (1/8))
+   $ whenmod 9 7 (iter 4)
+   $ stack [someCycles (within (0.25,0.6) (ply 2))
+                 $ s "bd sd*2 <glitch*2 sn> <cp future>",
+            s "hh27*<8!3 16>"] # n "<0 1 2> 3"
+
+d2 $ s "superhammond(<5 6 7>,8,<0 1 2 3 4>)"
+   # n "c4 d4" # legato "0.4 0.6"

@@ -1,0 +1,53 @@
+d3 $ loopAt 1.7 $ sometimes (stut 4 (1/16) 0.8) $ chop 5 $ s "<sam:4 sam:5 ~>" # vowel "o u" # delay 0.2
+
+d4 $ s "<supernoise(19,20,<0 1 2 3 4>) supernoise(17,20,<5 6 7>)>" # release "0.1 0.2 0.3 0.05 0.2" # n (range (-12) (-2) $ slow 4 perlin)
+
+d2 $ sometimes (superimpose (\x -> x - 12))
+   $ every 4 rev
+   $ n (scale "locrian" $ "<0*10 -1(9,10,<2 3 4 5>) [-2*2 -1*2 -3 ~ 0!6] [-3*2 2*2 ~ 2!5 ~ -1] -5(7,10,<0 1>)>")
+   # s "superchip"
+   # ((3 ~>) $ release (range 0.1 0.25 $ perlin)) # delay 0.1
+
+d2 $ loopAt 2.5 $ chop 32 $ s "<sam:0 sam:1 ~>"
+
+d1 $ loopAt 2 $ chop 32 $ s "<sam:2 sam:3>" # crush 5
+
+d1 silence
+
+:t (2 ~>)
+
+hush
+
+:t stut
+
+d4 $ s "supernoise(9,10,<0 1 2>)" # n (fmap (\x -> x - 12 ) (iter 8 "0 1 2 3")) # release (range 0.05 0.4 perlin) # pan (slow 4 sine)
+
+d5 $ struct bpat $ s "dbass" # squiz 4 # release 0.2 # n "0 1" # up "-2"
+
+:t plyWith
+
+hush
+
+d5 $ every 4 (# speed 0.5)
+   $ s "<cpu2:0*7 [cpu2:0!4 cpu:1!4] [cpu2:5!5 cpu2:3!2] cpu2:0(6,7,<1 2 3>)> <cpu2:1/2 hh27*2 kick*4 ht*8>"
+   # gain 1 # crush "<2 3>"
+
+d6 $ sometimes (ply 2) $ s "<dbass*8 [dbass*2 dbass!6 dbass*2] dbass(6,8,<1 2>) [dbass*3 dbass!5 dbass*3 dbass]>"
+    # squiz "1.5 2 3" # distort (range 0.1 0.7 $ slow 4 saw) # gain 0.8 # up "<0 -1 -2 1 2>" # lpf 1000 # n "<0 1>"
+
+d2 $ struct bpat $ s "dbass" # squiz "1.5 2 3" # n (irand 3) # gain 0.8 # release 0.5
+
+d4 $ every 3 (plyWith 2 (|+ 2)) $ s "supernoise(7,8,<1 2 3 4>)" # n "0 -2 1" # release (range 0.05 0.2 sine) # delay 0.2
+
+d4 silence
+
+d2 silence
+
+let dpat = "t!6 t*2 t*2"
+    bpat = "<t*8 [t*2 t!6 t*2] t(6,8,<1 2>) [t*3 t!5 t*3 t]>"
+
+d3 $ struct dpat $ s (scramble 3 "bskick bssnare bshihat")
+
+d1 $ plyWith "8 16" (|+ 2) $ slow 5 $ n (run 40) # s "rash" # lpf 1000
+
+hush

@@ -1,0 +1,56 @@
+-- Hi everyone! welcome back to another TidalCycles video!
+-- This will be one where get back to basics a little with our beats
+-- back to beats-ics...??
+-- No, sorry, maybe not
+
+-- Thanks everyone! I know this was a short video but I'm still
+-- recovering from the covid vaccine dose 2
+-- we'll get back to longer videos soon!
+-- Take care <3
+
+xfade 1 silence
+
+d1 $ someCycles (plyWith (every 4 (const "4 2") 2) (|+ n 1))
+   $ s "[kick [sd cp*<1 2>]]*2"
+   # n "0 <1 2>"
+--   # lpf (range 1000 5000 $ slow 16 saw)
+
+xfade 2 silence
+
+d2 $ slow 4
+   $ someCyclesBy 0.4 rev
+   $ someCyclesBy 0.35 (off (1/8) (|+ n 7))
+   $ s "superchip(3,4)" # n (2 + scale "major" "0 <6 3> 2 1")
+   # voice "{0.3 0.25 0.4}%4" # gain 0.9
+   # vowel "<a e o u>"
+
+xfade 3 silence
+
+d3 $ someCyclesBy 0.2 (stut 4 0.8 (1/32))
+   $ s "<[linnhats*8]!3 ~>" # gain 0.95
+
+
+
+
+
+
+d1 $ plyWith "2" (+ n 1) $ s "[kick [sd cp]]*2" # n "0 1"
+
+
+
+
+
+
+
+-- First, a word on scales
+-- whole, half, whole, whole, whole, half, whole
+-- so C dorian is
+--
+
+(3 + scale "dorian" "0 1 2 3 4 5 6 7")
+
+E♭ F G♭ A♭ B♭ C D♭ E♭
+
+"ef f gf af bf c6 df6 ef6" :: Pattern Double
+
+--

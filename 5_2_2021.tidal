@@ -1,0 +1,109 @@
+-- Hello again!
+-- This time we'll do some more practice
+-- But we'll focus on functions we don't use as often
+-- such as:
+--   bite
+--   chew
+--   chunk
+--   hurry
+--   rotL/rotR
+--   spread, spreadf, spreadr
+--   gap
+--   binaryN, binary
+-- but I still want to try making some chill music
+-- Okay, let's go
+
+-- I think I've tried the functions I wanted to try, we had some experiments
+-- So maybe that'll be the end of that!
+
+-- Thanks for watching and tune in again as we try more weird things in Tidal
+-- and we make A LOT more mistakes!
+
+-- That had its moments, but let's go back to my old friend the piano
+-- for a bit here
+
+let melo = "[c5'maj <d5'min b'dim>] <f5'maj g5'maj> <a4'min e5'min> a5'min" :: Pattern Double
+    mods = "<0 12> 24 <12 36>"
+
+d1 $ degradeBy 0.25 $ slow 4 $ n (chunk 4 (|+ 12) $ melo - 24) # s "superpiano"
+   # gain 0.8 # room 0.7 # shape 0.5 # sustain 4 # lpf 1500
+
+xfade 1 silence
+
+:t stutWith
+
+let compDistort = compensator distort
+    compensator f n = (|* (f n)) . (|* gain (1 - (n/5)))
+
+d2 $ compDistort (range 0 0.9 $ slow 16 sine)
+   $ n (scale "locrian" $ "{0 <~ 3> -2}%8" |- "{2 ~ 4 5}%7")
+   # stack [s "superchip" # release 1.5 # voice "{0.7 0.5 0.3}%5"]
+   # shape 0.4
+   # gain 1.1
+   # sustain 2
+   # lpf 2500
+
+
+d2 $ someCyclesBy 0.25 (stutWith 4 (1/8) (compGain 0.8))
+   $ n (scale "locrian" $ "{0 <~ 3> -2}%8" |- "{12 0 0}%7")
+   # stack [s "superpiano",s "[~ supermandolin]" # gain 1.2]
+   # shape 0.4
+   # gain 0.8
+   # sustain 2
+   # lpf 800
+
+d1 $ s "[808bd(7,8,<0 1 2>),{sn cp}%<4 8>,{casio ~ <cpu*2 casio> ~ cpu2 glitch}%8]"
+   # vowel "{a e i o u}%10"
+   # n ("{1 2 3 4 0 7 6 0}%7")
+   # room "{0.2 0.3 0.4}%4"
+   # pan "{0 1 0.5 0.2 0.8}%8"
+
+
+
+xfade 2 silence
+
+d1 $ s "{bd cp arpy ht future sn:1}%5"
+
+d2 $ s "superpiano*5" # n 0
+
+d1 $ s "bd cp arpy bd cp"
+
+-- That riff was cool but it wore out its welcome, amirite?
+
+d2 $ slow 4
+   $ rotR 0.25
+   $ rev
+   $ arp "thumbup" $ chunk 4 (|* lpf 0.25) $ n (melo - 12)
+   # s "superpiano" # gain 0.65 # shape 0.7 # room 0.7 # sustain 1.5 # lpf 1750
+
+-- yeah, okay, I like the lo-fi chillhop piano sound
+-- I confess I have simple needs
+
+d3 $ every 4 (ply "2 4") $ s "[bd <cp:1 cp:0>,linnhats]"
+   # pan (slow 4 sine) # room 0.4 # lpf 3500
+
+xfade 3 silence
+
+let percPat = (binaryN 8 "45")
+
+:t qfloor
+
+xfade 3 silence
+
+d1 $ struct percPat
+   $ s "cpu" # n (qfloor 1 $ range 0 7 $ slow 8 sine)
+
+d2 $ struct (rotL 0.125 percPat) $ s "<cpu2 glitch>" # n (qfloor 1 $ range 0 4 $ perlin)
+
+d3 $ struct (inv percPat) $ s "808bd"
+  # distort 0.5 |* speed "-0.5"
+
+:t spreadf
+
+-- this gonna be cool or this gonna hurt
+
+xfade 4 $ silence
+
+$ spreadf [id]
+   $ n ((iter 3 mods) + (iter 4 melo))
+   # s "rash" # gain 0.75

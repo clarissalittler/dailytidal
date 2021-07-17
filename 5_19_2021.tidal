@@ -1,0 +1,55 @@
+-- this one will be a little different
+-- it's time...to try using seqP, seqPLoop, and ur
+-- so ur is almost like a new pattern language DSL on top of
+-- the normal pattern language notation
+-- ur takes *two* lists: a list of named patterns
+-- and a list of named transformations
+-- if you just use the first list ur is like squeeze + a scaling factor
+-- if you use both it becomes squeeze + pickF at the same time
+
+-- here's a little helper function to do weird stuff
+-- with off and ur together
+let strPlus n = show . (+n) . read
+
+:t off
+
+-- now let's try making something a little more intentional
+d1 $ ur 2 "[0,1:backward,1] ~ 2 3:splorp"
+    [("0", s "bd*4"),
+     ("1", s "gtr" # n 0 # up "c'maj"),
+     ("2", s "gtr" # n 1 # up "e"),
+     ("3", s "cp*2")]
+    [("forward",id), ("backward", (|* speed "-1")), ("splorp", gap 4 . (# squiz 4))]
+
+-- okay so the offset DOES work inside the pattern string
+-- neat!
+d1 $ ur 8 (off (1/4) (fmap $ strPlus 1) "0 1 <1 2> 3")
+                   [("0",s "bd*4"),
+                    ("1",s "cp*2"),
+                    ("2", s "glitch*4" # n "0 1"),
+                    ("3", s "superpiano" # n "c'maj"),
+                    ("4", s "superchip" # n "d'min" # release 0.5)] []
+
+
+
+
+let pats =
+      [
+        ("a", stack [n "c4 c5 g4 f4 f5 g4 e5 g4" # s "superpiano" # gain "0.7",
+                     n "[c3,g4,c4]" # s "superpiano"# gain "0.7"
+                    ]
+        ),
+        ("b", stack [n "d4 c5 g4 f4 f5 g4 e5 g4" # s "superpiano" # gain "0.7",
+                     n "[d3,a4,d4]" # s "superpiano"# gain "0.7"
+                    ]
+        ),
+        ("c", stack [n "f4 c5 g4 f4 f5 g4 e5 g4" # s "superpiano" # gain "0.7",
+                     n "[f4,c5,f4]" # s "superpiano"# gain "0.7"
+                    ]
+        )
+      ]
+    fx = [("reverb", (# (room 0.8 # sz 0.99 # orbit 1))),
+          ("faster", fast 2)
+         ]
+in
+d1 $ ur 12 "a b:reverb c:faster" pats fx

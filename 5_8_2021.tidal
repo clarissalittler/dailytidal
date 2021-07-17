@@ -1,0 +1,297 @@
+--
+
+-- gotta go fast
+d2 $ sometimes (superimpose (+ 12))
+   $ every 4 rev
+   $ n (scale "locrian"
+        $ "<0*10 -1(9,10,<2 3 4 5>) [-2*2 -1*2 -3 ~ 0!6] [-3*2 2*2 ~ 2!5 ~ -1] -5(7,10,<0 1>)>") # s "superchip" # ((3 ~>) $ release (range 0.1 0.25 $ perlin)) # delay 0.1
+
+d1 $ off 0.05 id
+   $ sometimes (+ "1 2")
+   $ n "<-12(19,20,<0 1 2>)>"
+   # s "supernoise"
+   # release "0.05 0.1 0.2 0.07" # pan (slow 4 cosine)
+
+-- Variance
+import Control.Monad
+
+:i variance
+
+let variance ns p = p |+ (fmap (fromIntegral . floor) $ range (-ns) ns rand)
+    b2i True = 1
+    b2i False = 0
+    pal = fast 2 . palindrome
+    wrapNotes lower upper = aux
+         where aux n | n < lower = aux $ upper - (lower - n)
+                     | n > upper = aux $ lower + (n - upper)
+                     | otherwise = n
+    wrapNotesP = liftM3 wrapNotes
+
+:t varianceP
+
+d1 $ pal $ note (scale "minor"
+                $ wrapNotesP "<-2 -1 -5 -4>" "<6 3 9 6 7 5>"
+                $ snowball 8 (\x y -> x + variance "<3 5 7>" y) id
+                $ every 7 rev $ cat [(run 4), "1 2 -1 2",
+                                     "3!2 0 0",
+                                     b2i `fmap` binaryN 4 "6",
+                                     b2i `fmap` (sometimes inv $ binaryN 4 "11")])
+                                     # sound "gtr"
+                                     # sustain 4 # room 0.5 # gain 0.85
+
+-- from solstice
+
+let chorder x = (x |+ "[2,4,6]") :: Pattern Int
+
+d5 $ sometimes (stut 2 0.8 (1/8)) $ chop 64 $ n "0 <1*2 2*2 [3 5]>"
+   # s "industrial" # speed 0.25 # lpf 3000 # pan (slow 4 sine)
+
+d1 $ slow 2
+      $ sometimes (superimpose ((# gain 1.2) . (# s "supermandolin")))
+      $ s "<superpiano [superpiano ~]> <superpiano*2 [~ superpiano*2] superpiano*4?> superpiano*2? superpiano(3,4,<0 1>)"
+      # n (scale "phrygian" $ sometimes (superimpose chorder) $ irand 12 - 5)
+      # sustain 4
+      # lpf "[500|1000|750]"
+      # shape 0.5
+      # gain 0.9
+-- alt piano
+
+d1 $ slow 2 $ iter 4
+   $ rarely (off (1/8) (|- 12))
+   $ sometimes (superimpose $ (# s "supermandolin") . (# gain 1.3))
+   $ s "<superpiano*2 [superpiano*2 superpiano]> <superpiano [superpiano ~]> ~ superpiano(3,4)"
+   # n (scale "phrygian" $ sometimesBy 0.3 (superimpose chorder) $ irand 15 |- 5)
+   # sustain 4
+   # lpf "[1000|2000|500]"
+
+-- with my fav distorted synth
+d1 $ slow 8 $ n "<a4'min b4 c4'maj f4 d4'min>" # s "helm1" # sustain 8
+
+d2 $ someCyclesBy 0.25 (scramble 8)
+   $ superimpose (# squiz 4)
+   $ n "0*2 <5 2> 4 3" # s "[industrial,[bd sn],cp?]"
+   # delay 0.3
+   # distort 0.2
+
+d3 $ jux (|- 1) $ stut 4 (0.6) (1/16)
+   $ off (1/8) (|+ "<1 2 3>") $ s "super808*8" # n "<[4 5] [3 6]>"
+   # pan (slow 4 sine) # gain 0.9 # shape 0.1
+
+-- noise and chips
+
+d1 $ (0.125 <~)
+   $ stack [s "<supernoise(3,4) supernoise*4 supernoise(3,4,1)>"
+            # n 0 # release 0.4 # shape 0.5,
+            (0.125~>)
+             $ s "supernoise*8?"
+             # n 0 # voice 0.9 # release 0.1 # shape 0.2] # room 0.2
+
+let melopat = squeeze ("<[0 ~]*2 [1|2] <3 [[~ 3] 3]>>" + "<[0 <3 2>] 1*2 2 3>" + "<[1 0] 2>")
+                                    ["-2 0*2 3*2? <-4 ~>",
+                                    "-3 [-2 ~]*2",
+                                    "[0*2 1*2]*2",
+                                    "[0 1 ~ ~] [-2 -1]",
+                                    "[<-3 -4 -2>*2] 0 -1 1"] :: Pattern Int
+
+d2 $ stut 2 0.7 (1/8)
+   $ slow 2
+   $ sometimes (|* voice 1.07)
+   $ someCycles (ply "4 2")
+   $ n (scale "locrian" $ melopat - "<8 [9 4] 7 6>" - "0 1 2 4")
+      # s "superchip" # release (range 0.4 0.9 $ slow 2 perlin)
+      # shape 0.6 # voice "[0.2|[0.6,0.7]|[0.3,0.6,0.4]]"
+      # room 0.1
+
+-- one of my best piano riffs
+
+-- I can, and have, listened to this for like an hour straight
+d1 $ superimpose ((rarely (stut 4 0.9 (1/10)))
+                   . (|- n "12") . slow 4 . (# gain 0.9) . (0.15 ~>))
+   $ s "superpiano([5|7|9],10,<0 1 2>)"
+   # n (scale "minPent" $ irand 5 |- 6)
+   # sustain 4 # room 0.2 # shape (range 0.1 0.7 perlin)
+   # gain 0.8 # pan rand
+-- alt version
+
+d1 $ superimpose ((|- n "12") . slow 4 . (0.15 ~>) . (# gain 1) )
+   $ s "superpiano(<5 7 9>,10,<0 1 2>)"
+   # n (scale "minPent" $ irand 5 |- 6)
+   # sustain 4 # room 0.2 # shape (range 0.1 0.5 perlin) # gain 0.75
+
+-- another version with whenmod and other techs chure
+d1 $ whenmod 13 10 (# distort "<0.7 0.5 0.3>")
+   $ superimpose ((rarely (stut 8 0.9 (1/10))) . (|- n "[12|[12,5]|5]") . slow 4 . (# gain 0.8) . (0.15 ~>))
+   $ s "superpiano([5|7|9],10,<0 1 2>)"
+   # n (scale "minPent" $ irand 5 - "4 6")
+   # sustain (someCycles (|* "0.25") "4") # room "[0.2 0.4]"  # shape (range 0.1 0.5 perlin) # gain 0.8 # pan rand
+
+
+--weird beat involving contrast
+d2 $ off (1/8) (# s "<cp ht>") $ contrast (|* speed 2) (|* speed "-0.5") (s "bd")
+   $ s "[bd|sn]*8" # speed "[[0.5 0.7] <0.8 0.9>]" # room 0.3
+
+-- fun from class prep
+
+d4 $ slow 4 $ striate 64 $ s "industrial*8" # speed 0.25 # distort 0.6
+
+d2 $ sometimes (stut 2 0.7 (1/8))
+   $ n "0 <1*2 2*2 [3 5] [1 6]>"
+   # s "industrial"
+   # speed "<0.25 0.4 0.3>"
+   # room 0.3 # pan (slow 2 sine)
+
+d3 $ s "hh27*8?" # speed "0.25 0.4" # delay 0.4 # gain 1.2
+
+d1 $ sometimes (|* speed "-1")
+   $ s "rash <~ rash*2 rash> <[rash [rash ~]] [rash ~]*2 rash> <~ rash*2>"
+   # n ((|+ 48) $ scale "dorian" $ fmap floor $ range (-4) 12 $ slow 4 sine)
+   # distort "0.3 0.4"
+
+--plyWith examples that bang
+
+d1 $ degradeBy (1/8)
+   $ plyWith "4 8" (\x -> x |* distort 1.3 |* gain 0.95)
+   $ s "jvbass:0 jvbass:3"
+   # distort (range 0.1 0.5 $ slow 8 perlin)
+   # shape (range 0.2 0.4 $ slow 2 cosine)
+   # gain 1.1
+
+d2 $ every "3 4" rev
+   $ plyWith "8 16" (|* speed 0.85)
+   $ s "hh27*4" # room 0.3
+
+-- a crunchy demo from class
+d1 $ slow 2
+   $ sometimes (off (1/10) (|-12)) $  s "supercomparator(<5 6 7 8 9>, 10)"
+   # n (scale "minPent"$ (|- 3) $ irand 10)
+   # release (0.3 + range 0.2 0.5 rand)
+   # room 0.8
+   # gain 0.7
+   # detune (scramble 3 "0.5 1 2 3")
+   # distort (range 0.5 0.9 $ slow 4 perlin)
+   # voice rand
+
+d2 $ s "jvbass(9,10,<0 1 2>)"
+   # up (scale "dorian" $ 2 + irand 10)
+   # distort 0.8
+   # gain 0.9
+
+d3 $ fast 2 $ s "super808(4,5)" # n (irand 5)
+   # shape (range 0.3 0.8 $ slow 4 sine)
+   # distort 0.7 # gain 0.9
+
+d4 $ degrade $ stack [s "hh27*20" # pan 0,s "hh*10" # pan 1 # gain 1.2]
+   # speed (range 0.4 0.8 $ slow 4 $ perlin)
+   |* gain 1.2
+
+d5 $ s "[moog ~ [moog moog*2] moog <moog ~>]"
+   # legato 1 # gain 1.1 # up (scale "dorian" $ irand 5)
+
+-- variable demo
+   let melody = s "superchip(<3 5 7>,8,<0 1 2 3>)" # n "<[f a c e] [d e f c]>"
+
+   d1 $ stut "2 4 8" 0.7 (1/8) $ sometimes (|+ voice "0.2")
+      $ melody # release "0.4 0.6" # voice "0.35 0.4 0.45"
+
+   d2 $ slow 2 $ rev $ jux (|- 12) $(|- 12)
+      $ melody # sustain 2 # release "2" # voice "0.35 0.4 0.45 0" # pan (slow 2 sine)
+
+   d3 $ slow 2 $ s "supernoise(7,8,<1 3>)" # n "-24" # release "0.1 0.15 0.2" # room 0.4 # gain 1.1
+
+-- hammond banger
+d3 $ (|- n 12)
+   $ (superimpose
+        ((# voice 0.2) . (# distort (range 0.1 0.3 perlin)) . slow 4))
+   $ n (scale "majPent" $ "[-1 -2*2] <-1 1> [~ <0 -1>]*4 <3? -1>" +
+                          "<[2 <0 1>*2] [<1 0*2? -2> -1]> <1*2 3*4?>")
+   # s "superhammond" # gain 0.9
+   # lpf "{500 700 1000}%5"
+   # room 0.2
+   # gain 0.9
+   # pan (slow 2 cosine)
+
+-- simple addition beat
+d5 $ n "<[1 2] [0 ~] 3*2>" + s "[hh <hh27*2 hh27>]*4"
+   # n (irand 4) # room 0.3
+
+-- glitchiotone
+d6 $ sometimesBy 0.5 (superimpose $ (# s "casio") . (|* gain 0.9))
+   $ jux (|+ n "<-1 0 1 2>")
+   $ jux (# speed "<0.5 0.25 0.125>")
+   $ someCycles (off (1/16) (\p -> p - "0 1"))
+   $ off (1/8) (+ n "0 1 <2 3> [-1 1]")
+   $ n "<0 1>*2 <3 4 2>*4 <4 [0 2] 3> 1*4?" # s "glitch" # gain 0.7
+   # room 0.05
+
+-- this reminds me of an old skinny puppy song whose title I can't remember
+
+let chorder = sometimes (superimpose (|+ "[[2,4]|4]")) :: Pattern Int -> Pattern Int
+
+d2 $ someCycles (rev . stut 4 0.7 (1/12))
+   $ off (1/4) (|- release 0.1)
+   $ slow 2 $ n (scale "locrian"
+                  $ chorder
+                  $ "<-12 -10> -7*2 <-4 -6>*3 -8"
+                  + "<0 -1 -2>*8" + "[<0 -2> <-1 1 0> -2 -3 -4 -5]" + "3 2 4")
+            # s "superchip" # release (range 0.3 0.6 rand)
+            # room 0.5 |+ n "-12"
+            # voice (iter 4 $  "0.1 0.2 [0.3 0.4]" + range 0.1 0.4 rand)
+            # pan (range 0.1 0.9 $ perlin)
+            # gain 0.9
+            # distort (range 0.3 0.5 $ perlin)
+
+xfade 2 silence
+
+d3 $ s "[<bd*4 bd*4 ~>,sn(3,4),[~ cp]*2]" # n (iter 4 "0 1 2")
+
+d4 $ s "cpu2*4?" # n (irand 6) # gain 1.1
+
+d5 $ (n "0 <1 3> 2 <4 5>" + n "<-1 0 1>" + n "-1 <3 0> 2") # s "industrial"
+   |+ n (irand 2) # up (scale "locrian" "[-4|-2|-6]")
+   # room 0.3
+   # shape 0.4
+   # gain 0.9 # lpf "[2000|2500]"
+
+--- ???
+
+d15 -- $ off (1/12) (|+ "<7 0>")
+    $ n (scale "mixolydian"
+          $ (|- "<8 10 9>")
+          $ "<0 [1 2] <1 -1 3 2> -3> <-2 [0 1] 1> <2 -1> 3 4*2? 5"
+            + "<[[-1 -0] [<-2 [-1 -3]> -4] -3] [1 3 2 1]>"
+            + "<[-1 [-5 -4]] -3 [1 2 3]>"
+            + "<[0 1 -2 3 -4 5] [0 -1 2 -3 4 -5]>")
+    # s "[superpiano]"
+    # sustain ("[1 <0.1 0.2>] 2 3" - "0.05 0.3")
+    # pan (range "<0.3 0.2>" "<0.7 0.8 0.5>" $ slow 4 sine)
+    # shape 0.1
+
+xfade 15 silence
+
+d16 $ s "bd*6" # room 0.1
+
+d13 $ s "hh27*12?"
+
+-- fun demoed beat
+d4 $ someCycles rev
+   $ s "[hardkick*4 [hardkick? <cp cp*2>],hh27*4,[~ hh]*4]"
+   # up "<[-2 0 1] [-4 2]>"
+   # n "0 <1 2> [2 3]"
+
+xfade 4 silence
+
+-- it's everyone's favorite vocal sample BEV
+-- give it up for bev everyone!!!!
+d1 $ sometimes (stut 4 0.7 (1/16)) $ slow 32 $ striate' 64 (1/32)
+   $ sound "bev*2" # distort 0.6 # delay 0.7 # gain 0.9
+
+d2 $ sometimes (# crush 3) $ s "[bd*4,~ cp ~ cp*2,hh27*8,~ ht!2 ~]" # distort 0.6
+
+d3 $ s "superpiano" # n (scale "minPent" (irand 10)) # legato 5 # distort 0.8 # lpf "5000" # gain 0.9
+
+xfade 1 silence
+
+
+d1 $ off 0.125 (|- n 2)
+   $ n (scale "locrian" $ "-2 -3 4? 0")
+   # s "helm2"

@@ -1,0 +1,243 @@
+-- new function set
+-- fixed some bugs and generalized some things a bit
+
+let iterCat l = slow (return $ fromIntegral $ length l)
+                $ iter (return $ length l) (fastcat l)
+    rotList n [] = []
+    rotList n l = (drop n l) ++ (take n l)
+    permutes n l = [rotList n' l | n' <- [0,n..(length l)-1]]
+    iterFast' n l = iterFastP (fromList [0,n..(length l)-1]) l
+    iterFast = iterFast' 1
+    iterList' n l = iterP (fromList [0,n..(length l)-1]) l
+    iterList = iterList' 1
+    rotListP pn l = fmap (\i -> rotList i l) (segment 1 pn)
+    iterFastP = urIter fastcat
+    iterP pn l = slow (pure $ fromIntegral $ length l)
+                   $ iterFastP pn l
+    urIter f pn l = unwrap $ fmap f $ rotListP pn l
+
+-- so the segment 1 on the rotListP is to make sure that we can
+-- use continuous patterns as well
+
+{-
+iterList :: [Pattern a] -> Pattern a
+iterList' :: Int -> [Pattern a] -> Pattern a
+iterP :: Pattern Int -> [Pattern a] -> Pattern a
+-}
+
+-- continuing on with rhythms and melodies related to
+-- circular traversals
+
+import Control.Applicative
+
+let bPatList = [binaryN 8 ("<233 185 49>" + (segment 1 $ irand 5)),
+                binaryN 16 ("<23583 54833 11111 63402>"),
+                liftA2 (||) (binaryN 8 "<25 45 97>") "[<t f>!4 <f t>!4]",
+                "t(<5 7>,8,<0 1 2 3>)",
+                "t*16?",
+                "f t",
+                "[t|f]*4 [t|f]*2",
+                "<t f>*16",
+                "t [t*2 t]",
+                "<t f>"]
+
+:t inv
+
+xfade 1 silence
+
+d1 $ layer [struct (iterList bPatList) . (# pan (slow 4 sine)),
+            struct (iterList' 2 bPatList) . (|+ n 2) . (# pan (slow 4 cosine)),
+            struct (inv $ rotL 0.5 $ iterList bPatList)
+                     . (|+ shape 0.2) . (# n (irand 5)) ,
+            struct (iterList' 3 bPatList) . (# s "cpu2") . (# pan rand),
+            struct (iterP "<0 1 2!2 3!3 4!4 5>" bPatList)
+                     . (# s "cpu2") . (|+ n "<1 0 4>"),
+            struct (iterList' 3 bPatList) . (# squiz 4),
+            struct (inv $ iterList' 4 bPatList) . (# vowel "a")]
+   $s "glitch"
+
+
+
+let bPatList = [binaryN 8 245,binaryN 8 174,"t!3 f",
+                "<t f>*8", "t*8?", "t!2 f [t t*2]"]
+
+d4 $ struct (iterList bPatList) $ s "cpu2"
+
+d5 $ struct (iterList' 2 bPatList) $ s "[hh27,[~ hh]]"
+   # speed 0.5 # lpf 3000
+
+d6 $ struct (iterP "<0 1 2 1 1 2 3 4>" bPatList)
+   $ s "bd" # speed 0.5
+
+-- so that's a demo at least????
+
+xfade 1 silence
+
+d1 $ n (scale "dorian" $ iterList ["0 -1 -2 1",
+                                   "-3 1 2 0",
+                                   "<0 1 2>(5,8)",
+                                   "-2!3 0",
+                                   "-1 -2 0!2"])
+                                   # s "superpiano"
+                                   # lpf 900
+                                   # shape 0.3
+                                   # sustain 4
+                                   # gain 0.95
+
+d2 $ n (scale "dorian" $ iterList' 2
+                                 ["0 -1 -2 1",
+                                   "-3 1 2 0",
+                                   "<0 1 2>(5,8)",
+                                   "-2!3 0",
+                                   "-1 -2 0!2"] - 7)
+                                    # s "superpiano"
+                                    # lpf 800
+                                    # shape 0.3
+                                    # sustain 5
+                                    # gain 0.95
+
+d3 $ every 4 (fast 2)
+   $ n (scale "dorian" $ iterList' 3
+                                 ["0 -1 -2 1",
+                                   "-3 1 2 0",
+                                   "<0 1 2>(5,8)",
+                                   "-2!3 0",
+                                   "-1 -2 0!2"] + 7)
+                                    # s "superpiano"
+                                    # lpf 1000
+                                    # shape 0.3
+                                    # sustain 3
+                                    # gain 0.9
+
+:t selectF
+
+d1 $ s (iterList ["hh27 ~ hh27 ~ ~ hh27!3",
+                  "[hh27(5,8,<0 1 2 3>),<linnhats ~>*4]",
+                  "hh27!5 ~!3",
+                  struct (binaryN 8 237) $ "hh"]) # n (iterList ["0 0 0 1","2 3 2 3",5])
+
+
+d1 -- $ fast 2
+   -- $ off (1/8) (|+ distort 0.4)
+   $ s (iterP "<0 1 2 3 0>"
+                  ["hh27 ~ hh27 ~ ~ hh27!3",
+                   "[hh27(5,8,<0 1 2 3>),<linnhats ~>*4]",
+                   "hh27!5 ~!3",
+                   struct (binaryN 8 237) $ "hh"])
+                   # gain 1.2 # room 0.1 # distort 0.5
+
+
+
+
+d1 -- $ fast 2
+   -- $ off (1/8) (|+ distort 0.4)
+   $ s (iterList
+                  ["hh27 ~ hh27 ~ ~ hh27!3",
+                   "[hh27(5,8,<0 1 2 3>),<linnhats ~>*4]",
+                   "hh27!5 ~!3",
+                   struct (binaryN 8 237) $ "hh"]) # gain 1.2
+
+do
+  resetCycles
+  d1 $ s (iterList ["bd*8","cp*16","hh27*32","glitch*8"])
+
+d2 $ s $ rotR 1 $ iterList
+                  ["bd ~ bd ~ ~ bd!3",
+                   "cpu2(5,8,<0 1 2 3>)",
+                   "bd!5 ~!3",
+                   struct (binaryN 8 237) $ "bd"]
+
+d3 $ (s $ rotR 2 $ iterList
+                  ["glitch ~ glitch ~ ~ lo!3",
+                   "glitch(5,8,<0 1 2 3>)",
+                   "future!5 ~!3",
+                   struct (binaryN 8 237) $ "future",
+                   struct (binaryN 16 245234) $ "<cpu2 glitch>"]) # n "[0|1|2]"
+
+
+rotListP :: Pattern Int -> [a] -> Pattern [a]
+rotListP pn l = fmap (\i -> rotList i l) pn
+
+-- okay so rather than trying to accumulate over a pattern
+-- it seems like the easiest thing to do would be something more like
+-- have the pattern be circular in the way you'd want, so basically
+-- instead of trying to change rotListP we could instead do something
+-- more like this
+
+{-
+New attempt to work within Tidal than without it
+-}
+
+let circleP p l = slow (pure $ fromIntegral $ length l)
+                $ rotR p $ fastcat l
+    circle' n l = circleP (fromList [0,n..(length l)-1])
+    circle l = circle' 1
+
+d1 $ s (iterList ["hh27 ~ hh27 ~ ~ hh27!3",
+                  "[hh27(5,8,<0 1 2 3>),<linnhats ~>*4]",
+                  "hh27!5 ~!3",
+                  struct (binaryN 8 237) $ "hh"])
+
+
+d1 $ s (iter 4 (fastcat ["<bd*2 cpu2*8>","cp*2","glitch*2","hi*4"]))
+
+-- Note that they're synced up. Yay!
+
+-- So now we need to deal with random traverals of the circle
+-- moving at most only one space at a time
+-- Now the thing is if we want to describe a traversal as a choice
+-- sequence it's pretty easy, right?
+
+-- that's a traversal of the circle
+
+
+-- now maybe let's try using struct with this, y'know?
+
+let beats = ["bd!2", "bd", "~ bd", "bd ~ bd"]
+    hats = ["hh27 ~", "hh27*2", "~", "hh27*4"]
+    bPat = ["t*4","f t", "t*2", "<t f>!4"]
+
+d1 $ struct (iterFastP "<0 1 2 1 1 2 3>" bPat) $ s "{hh27 hh}%8"
+
+d2 $ struct (iterFastP "<0 1 2 3>" bPat) $ s "[bd|glitch]"
+
+-- Okay I think this is actually kinda interesting? I want to write
+-- a lot more helper functions around this though
+-- until next time!
+
+:t inv
+
+d3 $ struct (inv $ iterFastP "<0 1 2 1 2 3 2 1>" $ bPat)
+   $ s "cpu2" # n "{0 1 2}%5"
+
+
+d1 $ s (iterFastP "<0 1 1 2 1 0 3>" beats)
+
+d2 $ s (iterFastP "<0 1 2 3>" beats)
+
+d3 $ s (iterFastP "<0 0 1 0 1 2 3>" hats)
+
+d2 $ s (iterFast ["bd*2","cp*2","glitch*2","hi*4"])
+
+d3 $ s (iterFastP "<0 1 2 3>" ["bd*2","cp*2","glitch*2","hi*4"])
+
+-- Okay, that's just a short one but just exploring
+-- this whole circle rhythm thing a bit more
+-- take care <3
+
+d1 $ s (iterList
+                 ["hh27 hh27 ~!6",
+                  "hh27 ~ hh27 ~!3 hh27 ~",
+                  "hh27!4 ~!4",
+                  "hh27!8"])
+                  # n "{0 1}%8"
+
+d2 $ s (iterList ["bd!3 ~",
+                  "bd ~ bd ~",
+                  "bd bd*2 ~ bd"])
+
+d3 $ s (iterList ["glitch(5,8)",
+                  "glitch(7,8)",
+                  "glitch*4",
+                  "glitch!3 ~ glitch!3 ~",
+                  "glitch glitch"])

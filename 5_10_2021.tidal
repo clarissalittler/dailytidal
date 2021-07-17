@@ -1,0 +1,94 @@
+setcps (135/60/4)
+
+-- Okay, I think I'll call it for the day there
+-- but this was a fun little practice session with just
+-- really basic beat structures
+-- next time we'll try more complicated ones, I think
+-- and then eventually we'll be getting to coding with Random
+-- and some tutorials about monads (yes, yes, I know)
+-- take care
+
+
+-- Hi everyone! I'm recording during the day when there's a LOT
+-- of construction noise, so that means I won't be talking on this
+-- This is basically just a study on polymeter and polyrhythm
+-- and wondering about how different kinds of beats sound when layered
+-- so stick around and we'll see how these tricks work!
+
+-- start with the basics
+
+-- what happens if we iter on the polyrhythm?
+-- let's find out
+-- verdict: eh
+
+-- let's change the metre just a little
+-- verdict: also ehhhh
+
+-- I think we've played this one out
+xfade 1 silence
+
+d1 $ rarely (# crush "<2 4>")
+             $ stack [sometimes (stut "<2 4 6>" 0.9 (1/12))
+             $ s "{bd future sn:1 cp}%3",
+            someCyclesBy 0.25 (fast 2)
+             $ s "{glitch sd lo hi}%2" # n "[0|1]"]
+             # room 0.1
+
+xfade 2 silence
+
+d2 $ stack [n "<7 5*2> <1 <6 3>*2> <[2,4] [1,5]>",
+            n "{5 2 3 6 7}%4"] # s "arpy" # speed 0.25
+
+-- now let's try layering euclidean rhythms
+-- okay weirdly this suddenly started sounding kinda like
+-- Beautiful People??
+
+-- what happens if we put it at different offsets?
+-- verdict: still sounds decent
+
+-- now what if we add just another rhythm
+-- okay maybe but not that sample, that clashed super badly
+-- interestingly it seems like putting something at (7,15)
+-- causes some weird "disonance" rhythmically
+d1 $ stack [s "future(13,15,<0 1 2>)",
+            s "glitch(9,15,<1 2 3>)",
+            s "cpu2(5,15,<4 5 6>)"]
+
+-- okay let's try a different base
+
+-- okay those go together really nicely!!
+d1 $ stack [s "future(9,10,<0 1 2 3 4>)",
+            s "glitch(7,10)"]
+
+xfade 1 silence
+
+-- okay, let's try something where we layer with
+-- different underlying pulses
+
+-- okay I like those "dropped" beats
+-- there's almost like a moment of anticipation in the air
+
+-- okay let's see how weird we can get this
+d1 $ stack [s "cpu2(3,4,<1 2 0>)",
+            s "future(<1 2>,3,<0 1>)",
+            s "glitch(<3 5>,6,<0 1 2 3>)"] # n "0 1 2"
+-- oooh like that one
+
+xfade 1 silence
+
+xfade 2 silence
+
+d2 $ n (scale "minor" $ sometimes (off (1/12) (|+ "[1|2]"))
+                      $ iter 6 $ "<[0,2,4] [0,4]> <3 2*2> -2")
+   # s "superchip" # release 0.3 # voice "{0.1 0.2 0.3 0.5 0.6}%4"
+
+
+d1 $ s "<sd sd*2> [linnhats:0 linnhats:1]" # speed 0.5
+
+d1 $ stack [s "future(13,15,<0 1 2>)",
+            s "glitch(7,15)",
+            s "cpu2(5,15)"]
+
+d1 $ stack [s "{future future ht sn:1 cp sd cpu2}%3",
+            s "glitch*4",
+            ] # room 0.2 # n "0 1"

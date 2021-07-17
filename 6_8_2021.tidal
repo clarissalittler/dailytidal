@@ -1,0 +1,40 @@
+data Heck = Dog Double | Cat
+
+* Couldn't match expected type `Pattern Double'
+              with actual type `Double'
+* In the first argument of `distort', namely `(d / 2)'
+  In the expression: distort (d / 2)
+  In an equation for `petToMod': petToMod (Dog d) = distort (d / 2)
+
+:t return
+t> return :: Monad m => a -> m a
+
+let petToMod (Dog d) = distort ((return d)/2)
+    petToMod Cat = pan rand
+    hecker = do
+          r <- rand
+          if r > 0.6
+           then return (Dog r)
+           else return Cat
+
+:t (>>=)
+t> (>>=) :: Monad m => m a -> (a -> m b) -> m b
+
+d1 $ s "bd*8" # (hecker >>= petToMod)
+
+
+
+
+
+data Heck = Dog Double | Cat
+
+
+let hecker = do
+     r <- rand
+     if r > 0.5
+      then return $ Dog r
+      else return $ Cat
+    petToMod (Dog d) = distort ((return d) /2)
+    petToMod (Cat) = pan rand
+
+d1 $ s "bd*8" # (hecker >>= petToMod)

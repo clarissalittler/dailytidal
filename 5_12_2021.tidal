@@ -1,0 +1,56 @@
+setcps (135/60/4)
+
+-- Hey everyone! It's time for another Tidal practice video
+-- I'm not sure why I ever bother saying what I'll do next time
+-- because by the time I'm there I'm all "nope, I wanna do something else!"
+--
+-- So this video is going to be meditations on the squeeze function
+
+:t squeeze
+ squeeze :: Pattern Int -> [Pattern a] -> Pattern a
+
+
+-- pickF is squeeze but for lists of functions!!!
+:t pickF
+
+let pat = (degrade $ "<0 1 2>*2 ~ [1 0] ~ 3*2 [1 2]") :: Pattern Int
+    pat2 = (every 4 degrade $ "{0 1 2 3 4}%8") :: Pattern Int
+
+
+xfade 1 silence
+
+d1 $ squeeze pat2 [s "<arpy>" # speed "<0.5 0.25>" |+ n "<2 3 4 5>" ,
+                   s "glitch*2", s "future", s "sd*<2 4>", s "rc"]
+     + (squeeze (someCycles rev pat2)
+        [n "<0 1*2>", n ("[3 2]"), n "[0|1|2|3|4]"])
+     + n "<0 2> <1 4 3>"
+
+
+-- that was more weird
+d1 $ pickF (rotL 0.5 $ palindrome pat) [stut 6 0.8 (1/12), (|+ n 2)]
+   $ squeeze (off (1/8) (|+ "<1 2>") pat) [s "808*<2 4>", s "glitch", s "cp", s "insect"]
+   # gain 1.2
+
+let melo = sqP ["c3'maj","d3'min","g3'min","f3'maj","a3'min"] :: Pattern Double
+    sqP = squeeze "<0 3>*2 ~ 1*2 <3 4>"
+
+:t sqP
+sqP :: [Pattern a] -> Pattern a
+
+d2 $ degrade $ n (slow 2 melo) # s "superpiano" # sustain 4 # lpf 1500 # shape 0.3
+
+d1 $ rotL 0.25 $ sqP [s "bd", s "cp", s "glitch"] # gain 1.1
+
+once "cp"
+
+d1 $ squeeze "0 [1 0*2] 2? 2 0" [s "bd", s "cp", s "glitch*2"]
+
+d1 $ squeeze "0*2 1*<2 4>" [s "bd cp*2 sd", s "glitch*4"]
+
+d1 $ squeeze (whenmod 20 18 (struct "t*20 t*10")
+              $ (off (1/8) (+ "<1 2>") $ "0*4"))
+                [s "bd <cp sd>",
+                s "<glitch:2 casio:1 casio:1>",
+                s "<cpu2*2 cpu2*4 ~>"]
+
+:i IsString

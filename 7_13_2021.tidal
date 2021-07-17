@@ -1,0 +1,32 @@
+import Control.Monad.State
+
+:t lift
+
+
+d1 $ n ("0 1 2" + "4 5 6 7" ) # s "superchip" # voice 0.3
+
+adder p1 p2 = do
+  n1 <- p1
+  n2 <- p2
+  return (n1 + n2)
+
+-- we're gonna use this type
+
+StateT Double Pattern Double
+
+let integrate 0 r p = get
+    integrate n r p = do
+        v <- lift $ rotL (r * fromIntegral n) p
+        v' <- get
+        put (v + v')
+        integrate (n - 1) r p
+
+:t evalStateT
+evalStateT :: Monad m => StateT s m a -> s -> m a
+
+(integrate 10 "<0 1 2 3>") 0
+
+evalStateT (integrate 10 "<<0 1 5> 1 2 3>") 0 :: Pattern Double
+
+
+d1 $ s "glitch*20" # n (evalStateT (integrate 10 0.2 (slow 9 sine)) 0)

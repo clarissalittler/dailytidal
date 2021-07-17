@@ -1,0 +1,34 @@
+-- Hi everyone!
+-- Welcome to another TidalCycles daily video
+-- This time I think I'm going to focus on the superhammond and supermandolin
+-- synths in order to get a sense for what I can do with those
+-- So...let's see
+-- Start with a plunky supermandolin loop (which always sounds more like
+-- a harpsichord)
+-- let's also try to make locrian chords work again
+
+-- hey that was pretty fun!
+-- But, I did everything I could think of just on that one theme
+-- without making it overly complicated
+-- so how about we leave it there and I'll see you tomorrow
+-- take care <3 
+
+let cProggers = (3+ (scale "locrian" $ "{0 1 1 3 0 1 2 -3 1 -1 0}%5" |+ "[[0,2,4]|[0,4]|[0,2,4,6]]"))
+
+xfade 1 silence
+
+d1 $ degradeBy 0.25
+   $ s "<supermandolin(7,8,<0 1 2 3 4 5>)!3 [supermandolin ~]*4>"
+   # n cProggers
+   # sustain "{4 3.5 3}%8" # room 0.2
+   # gain (range 0.8 1 $ slow 8 sine + slow 4 cosine)
+   # shape 0.1
+
+xfade 2 silence
+
+-- $ superimpose (stut "<2 4>" (0.85) (1/4) . (|- n 12) . slow 4 . (# pan rand))
+   $ s "<[superhammond [superhammond [~ superhammond]]] [superhammond superhammond*2?]>"
+   # n (slow 2 $ rev $ cProggers)
+   # gain 0.9
+   # release 2
+   # room 0.2

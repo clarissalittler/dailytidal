@@ -1,0 +1,38 @@
+-- Hi everyone, it's been A Time lately so
+-- this will probably be a short video
+-- let's try seeing if we can improve some work we did in the past
+-- namely the pattern we used for long period random melodies
+
+import Control.Monad
+
+-- here's our helper functions
+let variance ns p = p |+ (fmap (fromIntegral . floor) $ range (-ns) ns rand)
+    b2i True = 1
+    b2i False = 0
+    wrapNotes lower upper = aux
+         where aux n | n < lower = aux $ upper - (lower - n)
+                     | n > upper = aux $ lower + (n - upper)
+                     | otherwise = n
+    wrapNotesP = liftM3 wrapNotes
+
+-- hrmm so I think the big problem is that the pattern is too flat
+-- messing around a fair bit still leaves it *flat* in ways that
+-- sound boring after awhile
+-- I'll think about this in the next video
+-- take care <3
+
+d1 $ sometimes (off "e" (|+ voice 0.2))
+   $ palindrome
+   $ note (scale "dorian"
+                $ sometimes (|+ "[[0,2,4]|[0,4]|[0,2,4,6]]")
+                $ wrapNotesP ("<-2 -1 -4 -3>" - 7) ("<5 3 4 3 2 3>" - 8)
+                $ snowball 8 (\x y -> x + variance "<2 3 4>" y) id
+                $ every 7 rev $ cat [(run 4), "1 2 -1 2",
+                                     "3!2 0 0",
+                                     b2i `fmap` binaryN 4 "6" - 1,
+                                     b2i `fmap` (sometimes inv $ binaryN 4 "11")])
+                                     # sound "superchip"
+                                     # release 0.8
+                                     # voice 0.6
+                                     # sustain 4 # room 0.25
+                                     # gain 0.75 # shape (range 0.1 0.6 perlin)

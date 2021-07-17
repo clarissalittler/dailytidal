@@ -1,0 +1,36 @@
+-- Hey everyone!
+-- This is going to be a video where we show a little more messing with
+-- the ur function
+
+-- here's a little helper function to do weird stuff
+-- with off and ur together, plus some definitions that
+-- will make things more convenient.
+-- want to play with the chord progression we used on 5/17
+-- as the basis for some more messing with ur
+let strPlus n = show . (+n) . read
+    addTrans s x = x ++ ":" ++ s
+    chordsPat = "<fs4'min g4'maj e4'min b4'min fs4'min g4'maj e4'min cs4'dim>" :: Pattern Double
+    namedPats = [("slowOrg", s "superhammond" # sustain 4
+                                              # n chordsPat # gain 0.8),
+                 ("arpeg", arp "<up!3 down>"
+                            $ s "superpiano" # n chordsPat
+                              # lpf 800 # shape 0.5 # gain 0.9 # sustain 2),
+                 ("numbs", s "numbers" # n (irand 9))]
+    namedTrans = [("torn", degrade . gap 8 . (# distort 0.5)),
+                  ("reverb", fast 2 .
+                             (# pan rand) .
+                             (# room 0.9) . (# orbit 1) . (|* gain 0.85)),
+                  ("down", (|- n 12))]
+
+d1 $ ur 2 "<arpeg*2 slowOrg>" namedPats namedTrans
+
+d1 $ ur 16
+     "[<slowOrg:down slowOrg>, <arpeg*2 arpeg:down*2 arpgeg*4>] <slowOrg slowOrg:reverb> [arpeg:reverb,numbs] [slowOrg,<numbs:torn numbs:reverb>]"
+     namedPats namedTrans
+
+xfade 1 silence
+
+-- Okay, I'll leave this as a shorter video for today just because
+-- I feel like that was a nice, self-contained example
+-- I'll probably still be recovering from the vaccine when you see this
+-- but until next time...

@@ -1,0 +1,193 @@
+{-
+Hi everyone! Welcome to another daily video!!
+I'm gonna try this time playing with select and selectF
+and seeing what I can do with these as my primary control structures
+First let's see if we have the right intuition for this at all
+-}
+
+:t select
+
+-- okay there's also a delay effect happening something seems weird
+-- omg why is there a delay?
+-- brb
+-- OKAY
+-- so somehow the delay I'd used in a previous video was "sticky"
+-- and I needed to restart supercollider
+-- that's fascinating and I do not understand it at all
+
+-- so it seems like it never plays the last element of the list
+-- and that doesn't seem right
+-- OKAY I think I get what's happening
+-- check it
+-- so I thought I remembered this from looking at the code once:
+-- the continuous patterns, maybe with some exceptions, don't hit exactly 1
+-- maaaaybe sine and cosine do, let's test
+-- nahhh they don't, which is fine
+-- let's see what happens to select if we go a hair over 1
+-- this seems like a perfectly fine solution
+-- hrmm
+-- it works!!!
+-- and I don't think putting multiple instances will change the tempo
+-- nope, which is what I expected from how it was stitching
+-- see I find it interesting though that you don't hear the arpy in that last one
+-- uhhh oh I bet it's because of the boundaries of events lining up wrong
+-- I bet if I put in more it'll show up
+-- orrrrr maybe not,
+-- huh, fascinating, that's not how I would have thought it worked
+
+{-
+select :: Pattern Double -> [Pattern a] -> Pattern a
+select = tParam _select
+
+_select :: Double -> [Pattern a] -> Pattern a
+_select f ps =  ps !! floor (max 0 (min 1 f) * fromIntegral (length ps - 1))
+
+AH-HAH, look at that "min 1 f" there, so that's why the trick of going over
+works okay
+
+but I feel like I'm missing something here, but that's probably enough for this video
+take care <3!
+-}
+
+d1 $ select ("<[0.95,<0.4 0>,1?]!3 [~ 1]>")
+       [s "bd*<4 8 16>",cat [s "future*8", s "cpu2*16", s "insect*4"],(s "arpy*4" + n "<-1 2> 3 5"),s "[glitch:3]*12"]
+   # n (irand 5) # gain 1.2
+
+
+
+
+
+let mel = (-8) + (scale "mixolydian" $ "{<0 1 -1>*<2 1> <2 0*2 3> [~ -1] 2*<2 1> -3}%4")
+
+
+
+
+:t select
+select :: Pattern Double -> [Pattern a] -> Pattern a
+
+:t selectF
+selectF
+  :: Pattern Double
+     -> [Pattern a -> Pattern a] -> Pattern a -> Pattern a
+
+:t bite
+
+
+-- Okay, it's probably time to actually wind this down but this was
+-- a fun one
+xfade 1 silence
+
+-- this is a beautiful mess and I love it
+d1 $ layer [id,
+            slow 2,
+            palindrome,
+            bite 8 "<[0*4 1 2 0]!4 3(7,8)>" . (# pan rand),
+            slow 4 . (|- n 12) . (# release 2) . (# delay 0.5),
+            degrade . fast 2 . rev . (|+ n 12),
+            degradeBy 0.25 . (# s "glitch"),
+            fast 2 . (# s "future") . (# gain 1.25),
+            mask (binaryN 4 "<5 7>") . (# s "bd"),
+            someCycles (jux (fast 4 . rev . (# gain 0.85))),
+            slow 8 . (# pan (slow 4 sine)) . (# vowel "[a,e]"),
+            (# release 2) . slow 8 . (# s "superhammond") . (# gain 1) . (# sustain 4)]
+   $ n (whenmod 9 7 (struct "t(3,4)") mel) # s "superchip"
+   # voice "{0.4 0.3 0.45}%5"
+   # release "[0.4,0.6]" # sustain 1
+
+
+:t pickF
+
+d1 $ every 4 (linger 0.25) $ n "0 2 [3 4] 2" # sound "arpy"
+
+d1 $ stripe "4" $ s "bd*16"
+
+d1 $ pickF (fmap floor $ range 0 3 $ slow 4 sine)
+                      [stut 8 0.8 (1/8),
+                      (# distort 0.5),
+                      (# squiz 4)] $ s "bd*4"
+
+
+"1 3 4 6" + "4 7 9" :: Pattern Int
+t> (0>¼)|5
+(¼>⅓)|7
+(⅓>½)|10
+(½>⅔)|11
+(⅔>¾)|13
+(¾>1)|15
+
+adder "1 3 4 6" "4 7 9" :: Pattern Int
+
+t> (0>¼)|5
+(¼>⅓)|7
+(⅓>½)|10
+(½>⅔)|11
+(⅔>¾)|13
+(¾>1)|15
+
+let adder p1 p2 = do
+       x1 <- p1
+       x2 <- p2
+       return $ x1 + x2
+    doink sp np = do
+       s <- sp
+       n <- np
+       return $ s ++ ":" ++ (show n)
+
+d1 $ s (doink "bd future ht*4 glitch!2" ("<0 -1> 1 3 4" :: Pattern Int))
+
+:t doink
+doink :: (Monad m, Show a) => m String -> m a -> m String
+
+data Heck a = Dog a | Cat
+
+:i Maybe
+t> type Maybe :: * -> *
+data Maybe a = Nothing | Just a
+  	-- Defined in `GHC.Maybe'
+
+:i Heck Double
+
+
+t> type Heck :: * -> *
+data Heck a = Dog a | Cat
+  	-- Defined at :142:1
+type Double :: *
+
+
+:t return
+t> return :: Monad m => a -> m a
+
+:t petToMod
+t> petToMod :: Heck Double -> ControlPattern
+
+:t (>>=)
+t> (>>=) :: Monad m => m a -> (a -> m b) -> m b
+
+let petToMod (Dog d) = distort ((return d)/2)
+    petToMod Cat = pan rand
+    hecker = rand >>= (\r -> if r < 0.6 then return (Dog r) else return Cat)
+    {- hecker = do
+          r <- rand
+          if r > 0.6
+           then return (Dog r)
+           else return Cat -}
+
+
+d1 $ s "bd*8" # (hecker >>= petToMod)
+
+
+
+
+
+data Heck = Dog Double | Cat
+
+
+let hecker = do
+     r <- rand
+     if r > 0.5
+      then return $ Dog r
+      else return $ Cat
+    petToMod (Dog d) = distort ((return d) /2)
+    petToMod (Cat) = pan rand
+
+d1 $ s "bd*8" # (hecker >>= petToMod)

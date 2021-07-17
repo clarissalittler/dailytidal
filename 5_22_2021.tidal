@@ -1,0 +1,66 @@
+-- Hi everyone! Still recovering from the vaccine but doing
+-- *a lot* better. We're just gonna keep messing around with stuff
+-- and seeing what we can do, maybe come up with some more
+-- weird tricks
+
+-- First, here's a little riff I was playing with while I was teaching
+-- today!
+
+xfade 2 silence
+
+d1 $ s "[hh,~ <linnhats hh27>*<1 2>]*4" # gain 1.1
+
+d2 $ someCycles rev
+   $ someCyclesBy 0.3 (# vowel "o a")
+   $ stut "4" ("{0.8 0.75 0.85 0.7 0.9}%8") (1/16)
+   $ s "jvbass*2 ~ jvbass(3,4,<0 1 2 3 4>) jvbass"
+   # up "<c6'maj a5'min b5'dim f5'maj>"
+
+d3 $ jux (off (1/8) (|+ n 5))
+   $ s "<cpu2(3,4,<0 1 2 3>) glitch(3,4,<0 1 2 3>)>"
+     # n "<0 3 5>"
+     # pan rand
+
+-- So yeah I think there's some potential there for a future performance
+-- of some kind, I like the hihat part and the jvbass chords
+-- kinda never completely sold on the rest of the percussion
+-- Now what?
+
+-- wait what the...??
+-- b-banger?
+
+d1 $ slow 1
+   $ gap 32
+   $ up "<c5 e5 f5>"
+     # s "pad"
+     # shape 0.3
+
+xfade 1 silence
+
+d2 $ whenmod 8 7 (ply 2)
+   $ s "clubkick(7,8,<0 1 2>)" # shape 0.2 # gain 0.95
+
+d3 $ rotL (0.125)
+            $ s "808cy(3,4,<0 1>)" # speed 0.5 # lpf 2500
+
+xfade 4 silence
+
+-- This sounds like a particular part of the earthbound soundtrack??
+d4 $ slow 1
+   $ struct "t f <t t*2> <f t>"
+   $ (# up "<c4'maj e4'min>")
+   $ randslice 32
+   $ s "bev" # vowel "{u o}%4" # lpf 2000
+
+xfade 4 silence
+-- Okay, that was about 20 minutes of weirdness so I think I'll call it there
+-- I might start talking again in the next video so, uhh, watch out??
+-- In any case, until next time take care <3
+
+
+
+-- Thing 2
+
+d1 $ slow 8 $ up "<c5 e5 f5>" # s "pad"
+
+d2 $ slow 8 $ stut 8 0.6 (1/8) $ s "industrial" # speed 0.5

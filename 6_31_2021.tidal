@@ -1,0 +1,109 @@
+let iterCat l = slow (return $ fromIntegral $ length l)
+                $ iter (return $ length l) (fastcat l)
+    rotList n [] = []
+    rotList n l = (drop n l) ++ (take n l)
+    permutes n l = [rotList n' l | n' <- [0,n..(length l)-1]]
+    iterList n l = cat . (map cat) $ permutes n l
+
+:t iterList
+
+once $ s "hh:0 hh:7"
+
+d1 $ s "[hh:0 hh:7] [hh:0 hh:7*2] [hh:0 hh:7 hh:0 hh:7] <hh:0 hh:7>*4"
+
+
+d1 $ s "<bd*4 [bd ~ [bd bd] bd]>"
+
+d1 $ s "bd*4"
+
+d2 $ s "[hh*2 hh] hh*4 ~ hh*8"
+
+d3 $ s "hh27(<5 7>,8,<0 1 2 3 4 5>)"
+
+d4 $ degrade $ s "glitch*16"
+
+d4 $ s "[bd*3,bd*4]"
+
+d5 $ s "{bd cp sn glitch}%5" # n "{0 1 2 3}%3"
+
+t> (0>¼)|s: "hh"
+(¼>½)|s: "hh"
+(½>¾)|s: "hh"
+(¾>1)|s: "hh"
+
+
+permutes 4 [0,1,2,3 :: Int]
+
+[0,2..10] :: [Int]
+
+let h = 100
+
+take 100 [0,h..]
+
+rotList 4 [1,2,3]
+
+t> [2,3,1]
+
+:t cat
+
+:t fromList
+
+d1 $ (fromList ["bd","cp","sn"])
+
+do
+  resetCycles
+  d1 $ iterList 1 [s "bd*4", s "glitch*8", s "arpy*16"]
+
+
+
+do
+   resetCycles
+   d1 $ s "<bd*10 glitch*20>" # n (cat ["0", (irand 10)])
+
+do
+   resetCycles
+   d1 $ fast (slow 4 $ range 1 4 $ saw) $ s "[bd|glitch|cpu2]*4" # n (irand 10)
+
+do
+  resetCycles
+  d1 $ every 4 (jux (# squiz 2))
+     $ s "supernoise(<5 7>,8,<0 1 2>)" # n "-12" # release (0.2 + rand)
+
+
+d1 $ slow 4 $ gap 128 $ s "birds*4" # n 2
+
+
+d1 $ struct "t(7,10)" $ s "glitch:2"
+
+d2 $ s "industrial*8" # speed "0.25"
+
+d1 $ superimpose (# speed "-1") $ gap 32 $ s "rain" # gain 1.1
+
+d1 $ jux rev
+   $ chop "32 64"
+   $ s "c_table [c_table*4 c_table]" # n (irand 8)
+
+d1 $ s "supermandolin*24"
+   # n "{c4 d5 e3}%4" # gain 1.4 # shape 0.5
+
+
+d1 $ off (0.5) (|+ n 4)
+   $ off 0.25 (|+ n 3)
+   $ off 0.125 (|+ n 1)
+   $ s "bottle bottle*2" # speed "0.5"
+
+d2 $ s "<sundance*32 sundance*16 sundance*8>" # lpf 1500
+
+do
+  once $ s "poems:0"
+  d1 $ struct "t(<7 9>,10,<0 1 2>)"
+     $ randslice 128 $ s "poems:0"
+  d2 $ degrade $ s "glitch:2*20"
+
+d1 $ layer [slow 2 . (|- n 12),
+            slow 4 . (|- n 24) . (# sustain 4),
+            rev,
+            slow 8 . (|- n 7)]
+   $ s "superpiano(<9 10 11>,13,<0 3 6>)"
+   # n (scale "locrian" $ "{0 3 2 1 -2}%3")
+   # sustain 2 # shape 0.3 # gain 0.8

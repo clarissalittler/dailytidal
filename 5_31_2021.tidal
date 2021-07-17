@@ -1,0 +1,78 @@
+{-
+Hi everyone! Welcome to another daily TidalCycles video
+
+functions to try:
+smash  timeCat  within  trunc
+linger  chunk  fit  inside
+outside randcat wedge swingBy
+-}
+
+:t chunk
+t> chunk
+  :: Pattern Int
+     -> (Pattern b -> Pattern b) -> Pattern b -> Pattern b
+
+d4 $ chunk "8" ((# speed "-0.5") . (ply 4))
+   $ s "[glitch sd*2 future!2,arpy*16]"
+   # gain 1.1 # n "0 1 2 3"
+
+:t qfloor
+
+-- I HAVE NO IDEA WHAT's GOING ON
+
+:t inside
+
+-- this is horrible and awesome
+
+-- oh my god I'm in love with this screaming noise
+-- I want to marry it twice, but now say goodbye to the terrifying sounds
+-- that was a fun video, I feel like we learned a fair bit,
+-- so until tomorrow take care <3
+
+
+xfade 4 silence
+
+d4 $ outside 16 (# gain (range 0.8 1 $ perlin))
+   $ inside 8 (# distort (range 0 0.6 $ slow 2 sine))
+   $ inside 4 rev
+   $ (# speed "-0.5 -0.25") . (ply ("4 8 16" + 2*(fmap floor $ range 0 4 $ slow 8 sine)))
+   $ s "arpy*4" # n "[0|1|2|3]"
+
+xfade 1 silence
+
+d1 $ s "future <ht*2 [ht ht*2]>"
+   # gain 1.2 # room 0.3 # distort 0.1 # shape 0.3
+
+:t smash
+t> smash
+  :: Pattern Int
+     -> [Pattern Time] -> ControlPattern -> Pattern ControlMap
+
+:t within
+
+t> within
+  :: (Time, Time)
+     -> (Pattern a -> Pattern a) -> Pattern a -> Pattern a
+
+d1 -- $ whenmod 10 8 (linger 0.25)
+   $ within (0.3, 0.8) (hurry 2 . (# squiz 2))
+   $ s "cpu2(7,8,<0 1 2 3 4 5 6>)" # n (irand 6)
+
+xfade 2 silence
+
+:t begin
+
+:t linger
+
+linger :: Pattern Time -> Pattern a -> Pattern a
+
+-- this is basically the equivalent of [..|..|..]
+
+xfade 2 silence
+
+
+-- oh that's just nasty
+d2 -- $ linger (0.1)
+   $ smash 8 [0.5,2,4,0.25,8,1]
+   $ s "breaks125*2"
+     # begin "0" # end "0.5" # squiz 2 # room 0.1

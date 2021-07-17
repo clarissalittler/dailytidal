@@ -1,0 +1,185 @@
+:m + Control.Monad
+
+hush
+
+:t palindrome
+
+let pal x = fast 2 . palindrome
+
+let variance nn p = p + (fmap (\x -> fromIntegral $ x-nn) $ irand (2*nn)) -- just adds some up and down texture
+
+let variance ns p = p |+ (fmap (fromIntegral . floor) $ range (-ns) ns rand)
+
+hush
+
+:t plyWith
+
+d1 $ plyWith "2 4 8" (|+ distort 0.1) $ s "jvbass*4"
+   # n (scale "dorian" $ choose [0, 1, 2]) # distort 0.2 # shape 0.3
+
+d1 $
+
+d1 $ s "superchip*8" # n (scale "minPent" $ variance 3 "0*4") # release 0.7
+
+d1 $ slow 12 $ variance 3 $ n (scale "locrian" $ "<0 1 -6 -3>") # s "midi"
+
+d1 $ variance "3 4" $ n (scale "locrian" $ "[0 3*2 [-10!3 ~] 1]")
+   # s (choose ["superchip","superreese"])
+   # release 0.2
+
+let varianceP ns p = ns >>= (\n -> variance n p)
+
+let varianceP ns p = p |+ (fmap ())
+
+let b2i True = 1
+    b2i False = 0
+
+let wrapNotes lower upper = aux
+     where aux n | n < lower = aux $ upper - (lower - n)
+                 | n > upper = aux $ lower + (n - upper)
+                 | otherwise = n
+
+let wrapNotesP = liftM3 wrapNotes
+
+:t off
+
+-- hey everyone, this is just some very quiet music with a very long period
+-- suitable for background music, stimming, and other neuroatypical needs
+-- if you want, listen for the (run 4) `cat` (rev $ run 4), the up and down
+-- because that's what tells you it's come back around to its base phrase
+-- enjoy!
+
+:t inv
+
+d1 $ (sometimes $ stut 2 (1/8) 0.5) $ pal $ note (scale "<minor minPent>"
+                 $ wrapNotesP "<-4 -2 -8 -4>" "<6 3 9 6 7 5>"
+                 $ snowball 8 (\x y -> x + varianceP "<3 5 7>" y) id
+                 $ every 7 rev $ cat [(run 4), "1 2 -1 2",
+                                 "3!2 0 0",
+                                 b2i `fmap` binaryN 4 "6",
+                                 b2i `fmap` (sometimes inv $ binaryN 4 "11"),
+                                 iter 4 "-3 -2 -4 -1"]) # sound "gtr" # sustain 4 # room 0.8 # gain 0.8
+
+xfade 1 silence
+
+d2 $ s "cpu2(7,8)" # n (varianceP "<3 5>" "0 1 2")
+
+d1 $ s "bsguitar" # n 5 # legato 1 # speed "<0.75>"
+
+d1 $ chop 64 $ slow 8 $ s "cymelody" # n 3
+
+d2 $ s "bd!7 ~" # speed "0.75 1.1 0.9 0.6" # crush 8 # lpf 1000
+
+d2 $ slow 2 $ s "bd(11,12)"
+
+hush
+
+d2 silence
+
+d1 silence
+
+-- Hey everyone, this is just going to be a short stream in order to get back into the habit
+-- we're going to be, as usual, doing some fairly chill music and experimentation
+
+-- now let's get odd
+
+d4 $ every "3 4" rev $ sometimes (# speed "-1") $ scramble 8 $ chop 64 $ slow 8 $ s "cymelody" # n "3 4" # delay 0.2
+
+xfade 1 silence
+
+-- based on some functions I wrote this past week to add more variation and simple automelodies
+-- this starts off as a variation of the snowball example, but now we add in some fun
+d1 $ pal $ note (scale "<minor minPent>" $ wrapNotesP "<-10 -8 -12 -6>" "<8 6 7>" $ snowball 8 (\x y -> x + varianceP "<3 5 1>" y) id $ cat [run 4,
+                                                                                        b2i `fmap` binaryN 4 "7",
+                                                                                        b2i `fmap` binaryN 4 "11",
+                                                                                        "-2 0 -1 1",
+                                                                                        "3 -3 3 -3"]) # s (scramble 3 "gtr") # gain 0.9 # sustain 3 # release 1 # room 0.7 # lpf 1300
+
+d2 $ s "<bd*4 bd*4 [bd!3 ~]>" # room 0.8 # sz 0.7
+
+d3 $ every "<3 7 11>" (ply 2) $ s "hh27!7 ~" # gain 0.9
+
+d1 silence
+
+let underp = "t(5,8) <t(7,8) t(7,8,2)>"
+
+d3 silence
+
+hush
+
+d1 $ slow 2 $ struct underp $
+     slow 32 $
+     note (scale "locrian" $
+           varianceP "<3 <5 2>>" $
+           fmap read $ step' ["-6","-2","2","-4"] $ take 1024 $ lindenmayer 10 "0:1~1,1:2~23,2:00~,3:22~3,~:01~2" "0") # s "superchip" # legato 1 # delay 0.3 # lpf 1200
+
+d4 $ s "<bd*4 [bd hh27*2 hh27*4 hh27:1]>"
+
+d2 $ ghost $ degrade $ s "hh27*8" # speed (0.2 + 0.1*(slow 4 sine)) # gain 1.1
+
+d2 $ struct (inv underp) $ s "superchip" # (scale "locrian" $ chorder [fmap floor (range 0 7 $ slow 8 saw),"3 4","<5 6 7>"] $ fmap (\x -> x-12) $ irand 15) # sustain 1 # gain 0.8 # room 0.3 # release 0.3
+
+d3 $ struct underp $ s "jvbass" # n (range 0 4 $ perlin)
+
+d4 $ (1 ~>) $ struct (inv underp) $ s "bd" # lpf 1100 # gain 1.1 # squiz "2 4" # speed "0.7 0.8"
+
+d5 $ fast 2 $ struct (inv underp) $ s "hh27" # n "0"
+
+d5 silence
+
+let chorder ns n = stack $ map (+n) ns
+
+d4 silence
+
+hush
+
+d4 $ n (scale "locrian" $ "<0 1 2 -1>" + "1(3,8) -1(5,8)") # s "pulser" # release 0.3
+
+d4 silence
+
+d2 silence
+
+d1 $ weave 4 (pan saw)
+  [n "[0*2 0*3, [~ 3]*2, 4(3,8,<0 2>)]" # s "cpu" # squiz 2,
+   fast 2 $ brak $ n "0 4 3 <[~ 3] 3>" # s "cpu2"
+  ]
+
+d1 $ weave 8 (pan $ saw)
+    [n "[0*2 0*3, [~ 3]*2, 4(3,8,<0 2>)]" # s "cpu" # squiz 2,
+     fast 2 $ brak $ n "0 4 3 <[~ 3] 3>" # s "cpu2",
+     sound "~ clap:3*2" # speed 2,
+     sound "bd(3,8,<0 2>)" # shape 0.85
+    ]
+
+d1 $ weave 8 (note "c e f g" # s "supermandolin" # legato 2)
+      [vowel "a e i"] # gain 1.3
+
+d1 $ weave 4 (every 2 rev $ n (scale "ritusen" "0 .. 7") # s "rash")
+        [vowel "a e i",
+         vowel "o(5,8,<0 2>)",
+         squiz "0 3*2 4 7",
+         room "0 0.25 0.7 0.99" # orbit 3] |+ n 24
+
+d1 $ weaveWith 8 (every 2 rev $ n (scale "ritusen" "0 .. 7")
+                           # s "rash"
+                          )
+           [(+| vowel "a e i*2"),
+            (+| n "0 12*2 0 12"),
+            hurry 2,
+            off 0.25 (|+ n "-24") . struct "t(5,8,<0 2>)" . hurry 4
+           ] |+ n 24
+
+d1 $ scramble 8 $ slow 4 $ striate' 32 (1/8) $ s "rash*64" # n (varianceP 10 (12 +| run 24))
+
+d1 $ s "arpy(7,9,<0 1 2>)" # up (irand 8 - 10)
+
+:t striate'
+
+hush
+-- Okay, gonna end the stream right soon
+
+xfade 1 silence
+
+d2 silence
+
+d2 $ degrade $ off (1/8) (|+ "1 2") $ s "[bd!7 hh27, future(7,8)]" # gain (1 + 0.1*sine) # speed "0.8 1.1 0.5 0.9 0.6" # crush 8

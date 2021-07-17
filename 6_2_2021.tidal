@@ -1,0 +1,64 @@
+-- Hi everyone! Welcome back to a daily tidal cycles video
+-- inspired by something Cleary did I realize that I've never
+-- really played with the # cps modifier, that lets you globally
+-- change the tempo in a patterned way
+
+-- so let's try messing with it a bit and seeing what weirdness
+-- we can get up to
+
+-- here's our reset cps
+setcps (135/240)
+
+-- and this affects things globally (I think)
+
+-- okay, so let's try something weird involving plyWith and cps
+
+-- okay that's kind of interesting, but I think we can do more
+
+-- I don't know why but I find this one really funny
+
+-- I know this was a short video, but it's been a long day
+-- so maybe I'll just cut it short and put it down for now
+-- until next time, take care <3
+
+-- this is just messed up
+d1 $ cps "0.25 <0.7 0.5>*2 ~ 1(3,4)" # s "supernoise" # n "-12" # release 0.2
+
+d2 $ stack [s "glitch(3,4,1)",
+            s "c_table"] # n (irand 6)
+
+d3 $ s "supernoise*8" # n "-12" # release 0.2
+    # cps (0.5 + (range "-0.1" 2 rand))
+
+d2 $ s "future*32?" # cps (range 0.2 5 $ slow 10 $ sine)
+
+d1 $ stack [s "bd(7,8,<0 2 4 3>)",
+            s "future*8",
+            s "hh27*16?",
+            s "moog*4" # legato 0.3] # cps (range 0.2 1.5 $ slow 20 $ saw)
+
+d1 $ someCycles (|+ cps 2)
+   $ s "bd*8" # cps "{0.4 0.7 0.6 0.9}%5"
+
+d2 $ whenmod 8 4 (ply 2) $ s "hh27*16"
+
+d3 $ slow 2 $ s "superchip(3,4)"
+   # n "{c4'maj d4'min e4'maj}%4" # release 0.4
+   # voice 0.3
+
+-- YUP, it's global and synced
+
+d1 $ ply "2 4 8 <16 1>" $ s "future*128"
+
+
+
+
+
+d1  $ s "bd*128" # n (irand 7)
+    # cps (fast 4 $ perlin + 0.5) # speed 0.25 # gain 1 # distort 0.3
+
+d2 $ s "bd*16" # gain 1.3
+
+setcps (135/240)
+
+d1 $ s "superpiano*512" # n "[0,1] [2,4] -3"

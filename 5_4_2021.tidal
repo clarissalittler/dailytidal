@@ -1,0 +1,76 @@
+-- Hello and welcome back!
+
+:t lindenmayer
+
+-- I DIDN'T WRITE THIS
+d1 $ slow 2 $ sound $ step' ["feel:0", "sn:1", "bd:0"]
+(take 512 $ lindenmayer 5 "0:1~~~,1:0~~~2~~~~~0~~~2~,2:2~1~,~:~~1~"
+"0")
+
+:t parseBP_E
+
+let toPolyseq s n = parseBP_E $ "{" ++ s ++"}%" ++ (show n)
+
+:t toPolyseq
+
+:t unwords
+
+let pString = unwords $ map lindNumToSnd (take 512 $ lindenmayer 5 "0:1~~,1:0~1~2~201~~2~,2:201~,~:~1" "0")
+    lindNumToSnd '1' = "sn"
+    lindNumToSnd '0' = "future"
+    lindNumToSnd '2' = "cp"
+    lindNumToSnd '~' = "~"
+
+d1 $ stack [s "bd [cp sn]",
+       jux (fast 2) $ s "bd cp",
+       s "bd cp"]
+
+:t bite
+
+d1 $ someCycles (fast 2 . bite 8 "<[0 <5 2*2> ~ 1] [3 ~ 7 8]>")
+   $ plyWith "<2 4>" (|+ n 1)
+   $ s "808ht*2 <sn glitch>"
+   # n "<[0 1] [2 3] 4>"
+
+d2 $ n "0 1" # s "<sn glitch>"
+   # distort "<0.3 0.4>" # shape 0.8
+
+d3 $ whenmod 20 17 ((# distort 0.5) . hurry "<2 4 8>") $ s "hardkick*4"
+
+
+d3 $ stack [s "{bd!4 [sn cp]!2 cpu2!2}%<4 8>"]
+
+d2 $ slow 8 $ s "helm1"
+    # n (scale "locrian"$ "[[-5,-9]|[-7,0]|-3]" + "<-3 ~ -2 1 0>")
+    # sustain "<2 3 1.5>"
+
+let lindenPat' steps
+               lString
+               lStart
+               len
+               targs = unwords $
+                      map (cToI targs) $
+                       take len $ lindenmayer steps lString lStart
+    cToI lst c = case c of
+              '~' -> "~"
+              _ -> lst !! (read [c])
+    lindenPat s lstr lsta l targs =
+        parseBP_E $ lindenPat' s lstr lsta l targs
+    lindenPoly p s lstr lsta l targs =
+      (flip toPolyseq) p $ lindenPat' s lstr lsta l targs
+
+d1 $ s (lindenPoly 10
+        5 "0:123,1:2~0113,2:3~1~2,3:2~1~0~221,~:1~1"
+        "0" 1000 ["[cp|glitch:2]","sn","808*2","linnhats"])
+
+take 10 [1,2,3]
+
+:t lindenPat 5 "0:1~~,1:0~1~2~201~~2~,2:201~,~:~1" "0"
+
+:t map lindNumToSnd
+
+pString
+
+toPolyseq pString 10 :: Pattern String
+
+d1 $ s (toPolyseq pString 10)

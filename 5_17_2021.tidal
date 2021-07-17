@@ -1,0 +1,49 @@
+-- hey another piano and beats video, but this one maybe a little
+-- less slow
+-- or not I'm not sure yet
+-- Gonna heck around in e dorian right now, somewhat randomly picked
+-- so this means our scale is
+-- e, fs, g, a, b, cs, d
+-- and the chords are
+-- (i, ii, III, IV, v, vio, VII)
+-- e'min fs'min g'maj a'maj b'min cs'dim d'maj
+
+-- wait this is actually very cool!!!
+xfade 2 silence
+
+-- I feel like we learned a bit in this one,
+-- but really only got going right at the end
+-- but trial and error is kind of the whole point, isn't it?
+-- See you next time
+-- Until then, take care
+
+xfade 1 silence
+
+d2 $ n "<1 2 0 1>" # s "numbers"
+
+d1 $ layer [(arp "<up!3 down>" . (+ n 12)
+                  . (# legato 0.6)
+                  . (|* gain (range 0.9 1.4 saw)) . (# sustain 0.8)),
+           (slow 2 . (|- n 12) . (# sustain 2) . rev . (|* gain 0.9) ),
+           id]
+   $ slow 4
+   $ s "superhammond" # n "<fs4'min g4'maj e4'min b4'min>" # sustain 4
+   # gain 0.85
+
+d2 $ stack [slow 2 $ s "cpu2*2 ~ cpu2 glitch"
+                     + s "glitch cpu2 glitch",
+            slow 8 $ chop 32 $ s "rain" # gain 0.9]
+
+:t bite
+
+xfade 3 silence
+
+
+
+d3 $ every 8 (struct "t f t f")
+   $ slow 2
+   $ jux (|- n 12)
+   $ bite 5 ("<[[0 1*2] <2 4> ~ <1 3>] [<0*4 1*4 [<0 1>!3 ~]>]>")
+   $ arp "<thumbdown thumbup>"
+   $ n "<fs4'min g4'maj e4'min b4'min>" # s "superpiano"
+   # sustain 4 # lpf 600 # shape 0.4 # gain 0.9

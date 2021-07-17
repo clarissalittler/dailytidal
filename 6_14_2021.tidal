@@ -1,0 +1,55 @@
+{-
+Hi everyone! Welcome to another daily TidalCycles video
+
+Now I'm wondering what more we can do with select and selectF
+-}
+
+
+
+
+{-
+HRRRMMMMMMM
+I just keep feeling like there's something I'm not liking about this
+like I'm trying to come up with interesting ways it combines things together
+and kinda not
+
+HRRRRRRRRRRRRRRMMMMMMMMMMMMMMMMMMM
+I'm really struggling to come up with anything not bad for these functions
+which is funny because I feel like with a lot of the more meta-pattern operators
+I've been able to come up with at least modest bangerage
+
+Rather than leave on an unsatisfying note, let's try a little super808 muzak
+-}
+
+:t rotL
+
+-- there, that was at least a little fun so the whole thing wasn't
+-- unsatisfying
+-- until the next video, take care <3
+
+xfade 1 silence
+
+d1 $ layer [id,
+            (|+ n "<1 2>") . (selectF (range 0 1.1 $ perlin)
+                          [rotL 0.125, rotL 0.25, rotL 0.375]),
+            slow 4 . (# up "-12"),
+            slow "4 8" . (# distort 0.5),
+            plyWith "2 4" (|- n 1),
+            someCycles (plyWith 4 (|* gain 0.9)),
+            slow 2 . (# pan 0.8),
+            slow 3 . (# pan 0.2)]
+   $ s "super808*4 ~ super808(3,4,<0 1 2>) <super808*2 super808>"
+   # n "{0 3 5 5 2 4}%4"
+
+let mel = (-2) + scale "superLocrian" "{ -1 2 0 ~ 3 1 ~ 2 0 1 -1 2 0}%<4 8>"
+    mel2 = (-2) + scale "superLocrian" (select (off "s" (|+ 0.3) "0 <0.5 1> 0.25") ["-3 ~ 2","[-1 ~]*2", "-1*3", "-2 0"])
+
+d1 $ selectF (range 0 1.1 $ slow 4 perlin)
+                     [(# shape 0.2) . sometimes (stut 2 0.9 "s"),
+                      palindrome,
+                      (# vowel "[a,o]") . (# gain 0.85),
+                      (|+ "[0,2,4]"),
+                      superimpose (slow 2)]
+   $ n (mel + mel2) # s "supermandolin"
+                    # sustain "{2 4}%3"
+                    # gain 0.9
